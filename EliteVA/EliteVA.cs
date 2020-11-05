@@ -23,7 +23,7 @@ namespace EliteVA
     {
         private static IVoiceAttackProxy Proxy { get; set; }
         private static IHost Host { get; set; }
-        private static IEliteDangerousAPI EliteAPI { get; set; }
+        private static IEliteDangerousAPI Api { get; set; }
         private static ILogger<VoiceAttackPlugin> Log { get; set; }
 
         public static Guid VA_Id()
@@ -66,95 +66,14 @@ namespace EliteVA
 
             Proxy = new VoiceAttackProxy(vaProxy, Host.Services);
 
-            EliteAPI = Host.Services.GetService<IEliteDangerousAPI>();
+            Api = Host.Services.GetService<IEliteDangerousAPI>();
             Log = Host.Services.GetService<ILogger<VoiceAttackPlugin>>();
 
             Log.LogDebug("EliteVA v{version}", Assembly.GetExecutingAssembly().GetName().Version);
 
-            EliteAPI.Events.AllEvent += OnEliteDangerousEvent;
+            SubscribeToEvents();
 
-            EliteAPI.Status.Docked.OnChange += (sender, e) => SetStatus("Docked", e);
-            EliteAPI.Status.Landed.OnChange += (sender, e) => SetStatus("Landed", e);
-            EliteAPI.Status.Gear.OnChange += (sender, e) => SetStatus("Gear", e);
-            EliteAPI.Status.Shields.OnChange += (sender, e) => SetStatus("Shields", e);
-            EliteAPI.Status.Supercruise.OnChange += (sender, e) => SetStatus("Supercruise", e);
-            EliteAPI.Status.FlightAssist.OnChange += (sender, e) => SetStatus("FlightAssist", e);
-            EliteAPI.Status.Hardpoints.OnChange += (sender, e) => SetStatus("Hardpoints", e);
-            EliteAPI.Status.Winging.OnChange += (sender, e) => SetStatus("Winging", e);
-            EliteAPI.Status.Lights.OnChange += (sender, e) => SetStatus("Lights", e);
-            EliteAPI.Status.CargoScoop.OnChange += (sender, e) => SetStatus("CargoScoop", e);
-            EliteAPI.Status.SilentRunning.OnChange += (sender, e) => SetStatus("SilentRunning", e);
-            EliteAPI.Status.Scooping.OnChange += (sender, e) => SetStatus("Scooping", e);
-            EliteAPI.Status.SrvHandbreak.OnChange += (sender, e) => SetStatus("SrvHandbreak", e);
-            EliteAPI.Status.MassLocked.OnChange += (sender, e) => SetStatus("MassLocked", e);
-            EliteAPI.Status.FsdCharging.OnChange += (sender, e) => SetStatus("FsdCharging", e);
-            EliteAPI.Status.FsdCooldown.OnChange += (sender, e) => SetStatus("FsdCooldown", e);
-            EliteAPI.Status.LowFuel.OnChange += (sender, e) => SetStatus("LowFuel", e);
-            EliteAPI.Status.Overheating.OnChange += (sender, e) => SetStatus("Overheating", e);
-            EliteAPI.Status.HasLatLong.OnChange += (sender, e) => SetStatus("HasLatLong", e);
-            EliteAPI.Status.InDanger.OnChange += (sender, e) => SetStatus("InDanger", e);
-            EliteAPI.Status.InInterdiction.OnChange += (sender, e) => SetStatus("InInterdiction", e);
-            EliteAPI.Status.InMothership.OnChange += (sender, e) => SetStatus("InMothership", e);
-            EliteAPI.Status.InFighter.OnChange += (sender, e) => SetStatus("InFighter", e);
-            EliteAPI.Status.InSrv.OnChange += (sender, e) => SetStatus("InSrv", e);
-            EliteAPI.Status.AnalysisMode.OnChange += (sender, e) => SetStatus("AnalysisMode", e);
-            EliteAPI.Status.NightVision.OnChange += (sender, e) => SetStatus("NightVision", e);
-            EliteAPI.Status.AltitudeFromAverageRadius.OnChange += (sender, e) => SetStatus("AltitudeFromAverageRadius", e);
-            EliteAPI.Status.FsdJump.OnChange += (sender, e) => SetStatus("FsdJump", e);
-            EliteAPI.Status.SrvHighBeam.OnChange += (sender, e) => SetStatus("SrvHighBeam", e);
-            EliteAPI.Status.Pips.OnChange += (sender, e) =>
-            {
-                SetStatus("Pips.Engines", e.Engines);
-                SetStatus("Pips.System", e.System);
-                SetStatus("Pips.Weapons", e.Weapons);
-            };
-            EliteAPI.Status.FireGroup.OnChange += (sender, e) => SetStatus("FireGroup", e);
-            EliteAPI.Status.GuiFocus.OnChange += (sender, e) => SetStatus("GuiFocus", e.ToString());
-            EliteAPI.Status.Fuel.OnChange += (sender, e) =>
-            {
-                SetStatus("Fuel.Main", e.Main);
-                SetStatus("Fuel.Reservoir", e.Reservoir);
-            };
-            EliteAPI.Status.Cargo.OnChange += (sender, e) => SetStatus("Cargo", e);
-            EliteAPI.Status.LegalState.OnChange += (sender, e) => SetStatus("LegalState", e.ToString());
-            EliteAPI.Status.Latitude.OnChange += (sender, e) => SetStatus("Latitude", e);
-            EliteAPI.Status.Altitude.OnChange += (sender, e) => SetStatus("Altitude", e);
-            EliteAPI.Status.Longitude.OnChange += (sender, e) => SetStatus("Longitude", e);
-            EliteAPI.Status.Heading.OnChange += (sender, e) => SetStatus("Heading", e);
-            EliteAPI.Status.Body.OnChange += (sender, e) => SetStatus("Body", e);
-            EliteAPI.Status.BodyRadius.OnChange += (sender, e) => SetStatus("BodyRadius", e);
-
-            EliteAPI.StartAsync();
-        }
-
-        private static void SetStatus<T>(string name, T value)
-        {
-            name = $"EliteAPI.{name}";
-            Proxy.Variables.Set(name, value);
-        }
-
-        private static void OnEliteDangerousEvent(object sender, EventBase e)
-        {
-            if (EliteAPI.HasCatchedUp)
-            {
-                if (HasBeenSubscribedTo(e))
-                {
-                    SetEventVariables(e);
-                    TriggerEvent(e);
-                }
-                else
-                {
-                    string command = $"((EliteAPI.{e.Event}))";
-                    Log.LogDebug("Skipping {event} event, '{command}' has not been subscribed to", e.Event, command);
-                }
-            }
-        }
-
-        static bool HasBeenSubscribedTo(EventBase e)
-        {
-            string command = $"((EliteAPI.{e.Event}))";
-
-            return Proxy.Commands.Exists(command).GetAwaiter().GetResult();
+            Api.StartAsync();
         }
 
         public static void VA_Exit1(dynamic vaProxy)
@@ -172,18 +91,114 @@ namespace EliteVA
             Proxy = new VoiceAttackProxy(vaProxy, Host.Services);
         }
 
-        private static void SetEventVariables(IEvent e)
+        private static void SubscribeToEvents()
         {
-            SetVariables(e, e.Event);
+            Api.Events.AllEvent += OnEliteDangerousEvent;
+            Api.Status.Docked.OnChange += (sender, e) => SetStatus("Docked", e);
+            Api.Status.Landed.OnChange += (sender, e) => SetStatus("Landed", e);
+            Api.Status.Gear.OnChange += (sender, e) => SetStatus("Gear", e);
+            Api.Status.Shields.OnChange += (sender, e) => SetStatus("Shields", e);
+            Api.Status.Supercruise.OnChange += (sender, e) => SetStatus("Supercruise", e);
+            Api.Status.FlightAssist.OnChange += (sender, e) => SetStatus("FlightAssist", e);
+            Api.Status.Hardpoints.OnChange += (sender, e) => SetStatus("Hardpoints", e);
+            Api.Status.Winging.OnChange += (sender, e) => SetStatus("Winging", e);
+            Api.Status.Lights.OnChange += (sender, e) => SetStatus("Lights", e);
+            Api.Status.CargoScoop.OnChange += (sender, e) => SetStatus("CargoScoop", e);
+            Api.Status.SilentRunning.OnChange += (sender, e) => SetStatus("SilentRunning", e);
+            Api.Status.Scooping.OnChange += (sender, e) => SetStatus("Scooping", e);
+            Api.Status.SrvHandbreak.OnChange += (sender, e) => SetStatus("SrvHandbreak", e);
+            Api.Status.MassLocked.OnChange += (sender, e) => SetStatus("MassLocked", e);
+            Api.Status.FsdCharging.OnChange += (sender, e) => SetStatus("FsdCharging", e);
+            Api.Status.FsdCooldown.OnChange += (sender, e) => SetStatus("FsdCooldown", e);
+            Api.Status.LowFuel.OnChange += (sender, e) => SetStatus("LowFuel", e);
+            Api.Status.Overheating.OnChange += (sender, e) => SetStatus("Overheating", e);
+            Api.Status.HasLatLong.OnChange += (sender, e) => SetStatus("HasLatLong", e);
+            Api.Status.InDanger.OnChange += (sender, e) => SetStatus("InDanger", e);
+            Api.Status.InInterdiction.OnChange += (sender, e) => SetStatus("InInterdiction", e);
+            Api.Status.InMothership.OnChange += (sender, e) => SetStatus("InMothership", e);
+            Api.Status.InFighter.OnChange += (sender, e) => SetStatus("InFighter", e);
+            Api.Status.InSrv.OnChange += (sender, e) => SetStatus("InSrv", e);
+            Api.Status.AnalysisMode.OnChange += (sender, e) => SetStatus("AnalysisMode", e);
+            Api.Status.NightVision.OnChange += (sender, e) => SetStatus("NightVision", e);
+            Api.Status.AltitudeFromAverageRadius.OnChange += (sender, e) => SetStatus("AltitudeFromAverageRadius", e);
+            Api.Status.FsdJump.OnChange += (sender, e) => SetStatus("FsdJump", e);
+            Api.Status.SrvHighBeam.OnChange += (sender, e) => SetStatus("SrvHighBeam", e);
+            Api.Status.Pips.OnChange += (sender, e) =>
+            {
+                SetStatus("Pips.Engines", e.Engines, false);
+                SetStatus("Pips.System", e.System, false);
+                SetStatus("Pips.Weapons", e.Weapons, false);
+                SetStatus("Pips", string.Empty);
+            };
+            Api.Status.FireGroup.OnChange += (sender, e) => SetStatus("FireGroup", e);
+            Api.Status.GuiFocus.OnChange += (sender, e) => SetStatus("GuiFocus", e.ToString());
+            Api.Status.Fuel.OnChange += (sender, e) =>
+            {
+                SetStatus("Fuel.Main", e.Main, false);
+                SetStatus("Fuel.Reservoir", e.Reservoir, false);
+                SetStatus("Fuel", string.Empty);
+            };
+            Api.Status.Cargo.OnChange += (sender, e) => SetStatus("Cargo", e);
+            Api.Status.LegalState.OnChange += (sender, e) => SetStatus("LegalState", e.ToString());
+            Api.Status.Latitude.OnChange += (sender, e) => SetStatus("Latitude", e);
+            Api.Status.Altitude.OnChange += (sender, e) => SetStatus("Altitude", e);
+            Api.Status.Longitude.OnChange += (sender, e) => SetStatus("Longitude", e);
+            Api.Status.Heading.OnChange += (sender, e) => SetStatus("Heading", e);
+            Api.Status.Body.OnChange += (sender, e) => SetStatus("Body", e);
+            Api.Status.BodyRadius.OnChange += (sender, e) => SetStatus("BodyRadius", e);
         }
 
-        private static void SetVariables(object e, string name)
+        static string ToEventCommand(IEvent e) => ToEventCommand(e.Event);
+        static string ToEventCommand(string command) => $"((EliteAPI.{command}))";
+        static string ToEventVariable(string variable) => $"EliteAPI.{variable}";
+
+        static string ToStatusCommand(string command) => $"((EliteAPI.Status.{command}))";
+        static string ToStatusVariable(string variable) => $"EliteAPI.{variable}";
+
+        private static void SetStatus<T>(string name, T value, bool triggerChangeCommand = true)
         {
-            PropertyInfo[] properties = e.GetType().GetProperties();
+            var variable = ToStatusVariable(name);
+            var command = ToStatusCommand(name);
+
+            if (value.ToString() != string.Empty)
+            {
+                Proxy.Variables.Set(variable, value);
+            }
+
+            if (Api.HasCatchedUp && triggerChangeCommand)
+            {
+                TriggerCommand(command, $"{name} status");
+            }
+        }
+
+        private static void OnEliteDangerousEvent(object sender, EventBase e)
+        {
+            string command = ToEventCommand(e);
+
+            if (Api.HasCatchedUp)
+            {
+                if (HasBeenSubscribedTo(e))
+                {
+                    SetVariables(e);
+                }
+
+                TriggerCommand(command, $"{e.Event} event");
+            }
+        }
+
+        static bool HasBeenSubscribedTo(IEvent e) => HasBeenSubscribedTo(ToEventCommand(e));
+
+        static bool HasBeenSubscribedTo(string command) => Proxy.Commands.Exists(command).GetAwaiter().GetResult();
+
+        private static void SetVariables(IEvent e) => SetVariables(e, e.Event);
+
+        private static void SetVariables(object value, string eventName)
+        { 
+            var properties = value.GetType().GetProperties();
 
             foreach (PropertyInfo property in properties)
             {
-                SetVariable(property, e, property.Name, name);
+                SetVariable(property, value, property.Name, eventName);
             }
         }
 
@@ -191,13 +206,13 @@ namespace EliteVA
         {
             try
             {
-                Type propertyType = property.PropertyType;
-                TypeCode typeCode = Type.GetTypeCode(propertyType);
+                var propertyType = property.PropertyType;
+                var typeCode = Type.GetTypeCode(propertyType);
 
                 switch (typeCode)
                 {
                     case TypeCode.Empty:
-                        Log.LogDebug("Skipping {property} in {name} event because the type was empty", name, eventName);
+                        Log.LogDebug("Could not set {property} in {name} event because the type was empty", name, eventName);
                         return;
 
                     case TypeCode.Object:
@@ -205,34 +220,29 @@ namespace EliteVA
                         return;
 
                     default:
-                        name = $"EliteAPI.Event.{name}";
+                        var variable = ToEventVariable(name);
                         var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-
                         var value = Convert.ChangeType(property.GetValue(instance), type);
-                        Proxy.Variables.Set(name, value);
+                        Proxy.Variables.Set(variable, value);
                         break;
                 }
             }
             catch (Exception ex)
             {
-                Log.LogWarning(ex, "Could not set {name}", name);
+                Log.LogDebug(ex, "Could not set 'EliteAPI.Event.{name}'", name);
             }
         }
 
-        private static void TriggerEvent(IEvent e)
+        private static void TriggerCommand(string command, string source)
         {
-            TriggerCommand(e.Event);
-        }
-
-        private static async void TriggerCommand(string eventName)
-        {
-            eventName = eventName.Trim();
-            string command = $"((EliteAPI.{eventName}))";
-
-            if (await Proxy.Commands.Exists(command))
+            if (Proxy.Commands.Exists(command).GetAwaiter().GetResult())
             {
-                Log.LogDebug("Invoking '{command}' for {event} event", command, eventName);
-                await Proxy.Commands.Invoke(command);
+                Log.LogDebug("Invoking '{command}' for {event}", command, source);
+                Proxy.Commands.Invoke(command).GetAwaiter().GetResult();
+            }
+            else
+            {
+                Log.LogDebug("Skipping '{command}' for {event}", command, source);
             }
         }
     }
