@@ -69,6 +69,8 @@ namespace EliteVA
             EliteAPI = Host.Services.GetService<IEliteDangerousAPI>();
             Log = Host.Services.GetService<ILogger<VoiceAttackPlugin>>();
 
+            Log.LogDebug("EliteVA v{version}", Assembly.GetExecutingAssembly().GetName().Version);
+
             EliteAPI.Events.AllEvent += OnEliteDangerousEvent;
 
             EliteAPI.Status.Docked.OnChange += (sender, e) => SetStatus("Docked", e);
@@ -213,7 +215,7 @@ namespace EliteVA
             }
             catch (Exception ex)
             {
-                Log?.LogWarning(ex, "Could not set {name}", name);
+                Log.LogWarning(ex, "Could not set {name}", name);
             }
         }
 
