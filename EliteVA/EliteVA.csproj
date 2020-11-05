@@ -138,8 +138,8 @@
     <Reference Include="Somfic.Logging.VoiceAttack, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Somfic.Logging.VoiceAttack.1.0.3\lib\netstandard2.0\Somfic.Logging.VoiceAttack.dll</HintPath>
     </Reference>
-    <Reference Include="Somfic.VoiceAttack, Version=1.0.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Somfic.VoiceAttack.1.0.12\lib\netstandard2.0\Somfic.VoiceAttack.dll</HintPath>
+    <Reference Include="Somfic.VoiceAttack, Version=1.0.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Somfic.VoiceAttack.1.0.13\lib\netstandard2.0\Somfic.VoiceAttack.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
