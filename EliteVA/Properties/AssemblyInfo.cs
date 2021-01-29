@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("EliteVA")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Somfic")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("EliteVA")]
-[assembly: AssemblyCopyright("© Somfic 2020")]
+[assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9395fb21-09fe-4c79-bf70-db4f2a10860e")]
+[assembly: Guid("e22e5405-4d80-4ba6-814a-6c9598415b75")]
 
 // Version information for an assembly consists of the following four values:
 //
