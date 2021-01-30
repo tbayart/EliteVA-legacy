@@ -1,0 +1,71 @@
+name: Update version
+
+on: [push]
+
+env:
+  main-branch: main
+
+jobs:
+  update-version:
+    name: Update version
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: windows-latest
+    outputs:
+      label: ${{steps.VERSION.outputs.label}}
+      semver: ${{steps.VERSION.outputs.semver}}
+      nuget: ${{steps.VERSION.outputs.nuget}}
+      applicable: ${{steps.VERSION.outputs.applicable}}
+
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup GitVersion
+        run: dotnet tool install --global GitVersion.Tool --version 5.6.0
+
+      - name: Fetch for GitVersion
+        run: git fetch --tags --unshallow
+
+      - name: Fetch ${{env.main-branch}} for GitVersion
+        if: github.ref != 'refs/heads/${{env.main-branch}}'
+        run: git branch --create-reflog ${{env.main-branch}} origin/${{env.main-branch}}
+
+      - name: Update version
+        run: dotnet-gitversion /updateprojectfiles /updateassemblyinfo /output buildserver
+
+      - name: Set job output
+        id: VERSION
+        run: |
+          echo '::set-output name=label::${{env.GitVersion_PreReleaseLabel}}'
+          echo '::set-output name=semver::${{env.GitVersion_LegacySemVer}}'
+          echo '::set-output name=nuget::${{env.GitVersion_NuGetPreReleaseTagV2}}'
+          echo '::set-output name=applicable::${{env.GitVersion_PreReleaseLabel == 'alpha' || env.GitVersion_PreReleaseLabel == 'beta' }}'
+
+      - name: Enable branch protection bypass
+        if: ${{ steps.extract_branch.outputs.branch == env.main-branch}}
+        uses: Somfic/bypass-branch-protection@1.0.3
+        id: BYPASS
+        with:
+          token: ${{secrets.WORKFLOW_ADMIN_TOKEN}}
+          branch: ${{steps.extract_branch.outputs.branch}}
+
+      - name: Apply changes
+        if: ${{ steps.VERSION.outputs.applicable == 'true' || steps.extract_branch.outputs.branch == env.main-branch}}
+        uses: EndBug/add-and-commit@v6.2.0
+        with:
+          author_name: github-actions[bot]
+          author_email: github-actions[bot]@users.noreply.github.com
+          message: "Bumped version to ${{env.GitVersion_LegacySemVer}}"
+
+      - name: Disable branch protection bypass
+        uses: Somfic/bypass-branch-protection@1.0.3
+        if: ${{always() && steps.extract_branch.outputs.branch == env.main-branch}}
+        with:
+          token: ${{secrets.WORKFLOW_ADMIN_TOKEN}}
+          branch: ${{steps.extract_branch.outputs.branch}}
+          backup: ${{steps.BYPASS.outputs.backup}}
