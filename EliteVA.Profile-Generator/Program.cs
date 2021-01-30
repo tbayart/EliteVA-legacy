@@ -61,7 +61,7 @@ namespace EliteVA.ProfileGenerator
 
         public async Task Run()
         {
-            Assembly eaAssembly = Assembly.GetAssembly(typeof(IEliteDangerousAPI));
+            Assembly eaAssembly = Assembly.GetAssembly(typeof(IEliteDangerousApi));
 
             if (eaAssembly == null)
             {

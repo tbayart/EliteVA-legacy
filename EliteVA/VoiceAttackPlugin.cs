@@ -1,15 +1,23 @@
-﻿using EliteAPI.Abstractions;
-using EliteAPI.Event.Models.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Somfic.Logging.VoiceAttack;
+﻿using Somfic.Logging.VoiceAttack;
 using Somfic.VoiceAttack.Proxy;
 using Somfic.VoiceAttack.Proxy.Abstractions;
+
 using System;
 using System.IO;
 using System.Reflection;
+
 using EliteAPI;
+using EliteAPI.Abstractions;
+using EliteAPI.Event.Models.Abstractions;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+using Newtonsoft.Json;
+
+using Valsom.Logging.File;
+using Valsom.Logging.File.Formats;
 
 namespace EliteVA
 {
@@ -20,22 +28,48 @@ namespace EliteVA
         private static IEliteDangerousApi Api { get; set; }
         private static ILogger<VoiceAttackPlugin> Log { get; set; }
 
-        public static Guid VA_Id() => new Guid("189a4e44-caf1-459b-b62e-fabc60a12986");
-        public static string VA_DisplayName() => "EliteVA";
-        public static string VA_DisplayInfo() => "EliteVA by Somfic";
+        public static Guid VA_Id()
+        {
+            return new Guid("189a4e44-caf1-459b-b62e-fabc60a12986");
+        }
 
-        public static void VA_Init1(dynamic vaProxy) => Initialize(vaProxy);
+        public static string VA_DisplayName()
+        {
+            return "EliteVA";
+        }
 
-        public static void VA_Exit1(dynamic vaProxy) => Proxy = new VoiceAttackProxy(vaProxy, Host.Services);
+        public static string VA_DisplayInfo()
+        {
+            return "EliteVA by Somfic";
+        }
 
-        public static void VA_StopCommand() => Log?.LogInformation("EliteVA was stopped");
+        public static void VA_Init1(dynamic vaProxy)
+        {
+            try { Initialize(vaProxy); }
+            catch (Exception ex) { File.WriteAllText("eliteva.init.error", JsonConvert.SerializeObject(ex)); }
+        }
 
-        public static void VA_Invoke1(dynamic vaProxy) => Proxy = new VoiceAttackProxy(vaProxy, Host.Services);
+        public static void VA_Exit1(dynamic vaProxy)
+        {
+            try { Proxy = new VoiceAttackProxy(vaProxy, Host.Services); }
+            catch (Exception ex) { File.WriteAllText("eliteva.exit.error", JsonConvert.SerializeObject(ex)); }
+        }
+
+        public static void VA_StopCommand()
+        {
+            try { Log?.LogInformation("EliteVA was stopped"); }
+            catch (Exception ex) { File.WriteAllText("eliteva.stop.error", JsonConvert.SerializeObject(ex)); }
+        }
+
+        public static void VA_Invoke1(dynamic vaProxy)
+        {
+            try { Proxy = new VoiceAttackProxy(vaProxy, Host.Services); }
+            catch (Exception ex) { File.WriteAllText("eltiva.invoke.error", JsonConvert.SerializeObject(ex)); }
+        }
 
         private static void Initialize(dynamic vaProxy)
         {
-            string pluginDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
-                               AppDomain.CurrentDomain.BaseDirectory;
+            string pluginDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppDomain.CurrentDomain.BaseDirectory;
 
             Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) => { services.AddEliteAPI(); })
@@ -43,6 +77,7 @@ namespace EliteVA
                 {
                     log.SetMinimumLevel(LogLevel.Trace);
                     VoiceAttackLoggerExtensions.AddVoiceAttack(log, vaProxy);
+                    log.AddPrettyConsole("EliteVA", new DirectoryInfo(pluginDir), FileNamingFormats.Default, FileFormats.Default);
                 })
                 .Build();
 
@@ -53,8 +88,10 @@ namespace EliteVA
 
             SubscribeToEvents();
 
-            if (Api != null) Api.StartAsync();
-            else Log.LogCritical("EliteVA could not be found");
+            if (Api != null)
+                Api.StartAsync();
+            else
+                Log.LogCritical("EliteVA could not be found");
         }
 
         private static void SubscribeToEvents()
@@ -124,7 +161,7 @@ namespace EliteVA
         private static string ToEventVariable(string variable) => $"EliteAPI.{variable}";
 
         private static string ToShipCommand(string command) => $"((EliteApi.Ship.{command}))";
-
+        
         private static string ToShipVariable(string variable) => $"EliteAPI.{variable}";
 
         private static void SetShipVariable<T>(string name, T value, bool triggerChangeCommand = true)
@@ -132,15 +169,9 @@ namespace EliteVA
             string variable = ToShipVariable(name);
             string command = ToShipCommand(name);
 
-            if (value.ToString() != string.Empty)
-            {
-                Proxy.Variables.Set(variable, value);
-            }
+            if (value.ToString() != string.Empty) { Proxy.Variables.Set(variable, value); }
 
-            if (Api.HasCatchedUp && triggerChangeCommand)
-            {
-                TriggerCommand(command, $"{name} status");
-            }
+            if (Api.HasCatchedUp && triggerChangeCommand) { TriggerCommand(command, $"{name} status"); }
         }
 
         private static void OnEliteDangerousEvent(object sender, EventBase e)
@@ -149,10 +180,7 @@ namespace EliteVA
 
             if (Api.HasCatchedUp)
             {
-                if (HasBeenSubscribedTo(e))
-                {
-                    SetVariables(e);
-                }
+                if (HasBeenSubscribedTo(e)) { SetVariables(e); }
 
                 TriggerCommand(command, $"{e.Event} event");
             }
@@ -169,10 +197,7 @@ namespace EliteVA
         {
             PropertyInfo[] properties = value.GetType().GetProperties();
 
-            foreach (PropertyInfo property in properties)
-            {
-                SetVariable(property, value, property.Name, eventName);
-            }
+            foreach (PropertyInfo property in properties) { SetVariable(property, value, property.Name, eventName); }
         }
 
         private static void SetVariable(PropertyInfo property, object instance, string name, string eventName)
@@ -185,7 +210,7 @@ namespace EliteVA
                 switch (typeCode)
                 {
                     case TypeCode.Empty:
-                        Log.LogDebug("Could not set {property} in {name} event because the type was empty", name,
+                        Log.LogDebug("Could not set {Property} in {Name} event because the type was empty", name,
                             eventName);
                         return;
 
@@ -201,23 +226,17 @@ namespace EliteVA
                         break;
                 }
             }
-            catch (Exception ex)
-            {
-                Log.LogDebug(ex, "Could not set 'EliteAPI.Event.{name}'", name);
-            }
+            catch (Exception ex) { Log.LogDebug(ex, "Could not set 'EliteAPI.Event.{Name}'", name); }
         }
 
         private static void TriggerCommand(string command, string source)
         {
             if (Proxy.Commands.Exists(command).GetAwaiter().GetResult())
             {
-                Log.LogDebug("Invoking '{command}' for {event}", command, source);
+                Log.LogDebug("Invoking '{Command}' for {Event}", command, source);
                 Proxy.Commands.Invoke(command).GetAwaiter().GetResult();
             }
-            else
-            {
-                Log.LogDebug("Skipping '{command}' for {event}", command, source);
-            }
+            else { Log.LogDebug("Skipping '{Command}' for {Event}", command, source); }
         }
     }
 }
