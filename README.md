@@ -90,6 +90,6 @@ Variable keypress: [EliteAPI.LandingGearToggle]
 ```
 
 All in-game keybindings are made available through EliteVA and are updated whenever a change is made to the keybindings preset in-game. 
-Instead of traditionally having VoiceAttack press `G` when you want to retract the landing gear, your macro can press the actual key assigned to the gear.
+Instead of traditionally having VoiceAttack press `G` when you want to retract the landing gear, your macro can press the actual key assigned to the gear using the `{TXT:EliteAPI.LandingGearToggle}` variable.
 
 A list of all supported keybindings can be found [on the documentation website](https://docs.somfic.com/project/eliteapi/eliteva).
