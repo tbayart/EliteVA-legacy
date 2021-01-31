@@ -9,7 +9,7 @@
     <Version>1.0.0-alpha</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.0.0-alpha1037" />
+    <PackageReference Include="EliteAPI" Version="3.0.0-alpha1055" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
     <PackageReference Include="Somfic.Logging.Console" Version="1.0.4" />

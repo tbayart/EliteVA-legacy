@@ -3,21 +3,26 @@ using Somfic.VoiceAttack.Proxy;
 using Somfic.VoiceAttack.Proxy.Abstractions;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using EliteAPI;
 using EliteAPI.Abstractions;
 using EliteAPI.Event.Models.Abstractions;
+using EliteAPI.Options.Bindings.Models;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using Valsom.Logging.File;
 using Valsom.Logging.File.Formats;
+
 
 namespace EliteVA
 {
@@ -27,6 +32,8 @@ namespace EliteVA
         private static IHost Host { get; set; }
         private static IEliteDangerousApi Api { get; set; }
         private static ILogger<VoiceAttackPlugin> Log { get; set; }
+        private static string PluginDir { get; set; }
+        private static IDictionary<string, string> BindingsLayout { get; set; }
 
         public static Guid VA_Id()
         {
@@ -69,7 +76,7 @@ namespace EliteVA
 
         private static void Initialize(dynamic vaProxy)
         {
-            string pluginDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppDomain.CurrentDomain.BaseDirectory;
+            PluginDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppDomain.CurrentDomain.BaseDirectory;
 
             Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) => { services.AddEliteAPI(); })
@@ -77,7 +84,7 @@ namespace EliteVA
                 {
                     log.SetMinimumLevel(LogLevel.Trace);
                     VoiceAttackLoggerExtensions.AddVoiceAttack(log, vaProxy);
-                    log.AddPrettyConsole("EliteVA", new DirectoryInfo(pluginDir), FileNamingFormats.Default, FileFormats.Default);
+                    log.AddPrettyConsole("EliteVA", new DirectoryInfo(PluginDir), FileNamingFormats.Default, FileFormats.Default);
                 })
                 .Build();
 
@@ -88,16 +95,21 @@ namespace EliteVA
 
             SubscribeToEvents();
 
+
             if (Api != null)
+            {
+                Api.Bindings.OnChange += (sender, args) => { SetBindings(Api.Bindings.Active); };
                 Api.StartAsync();
-            else
-                Log.LogCritical("EliteVA could not be found");
+            }
+            else { Log.LogCritical("EliteVA could not be found"); }
         }
 
         private static void SubscribeToEvents()
         {
             Api.Events.AllEvent += OnEliteDangerousEvent;
 
+            // do this through reflection
+            Api.Ship.Flags.OnChange += (sender, e) => SetShipVariable("Flags", e);
             Api.Ship.Available.OnChange += (sender, e) => SetShipVariable("Available", e);
             Api.Ship.Docked.OnChange += (sender, e) => SetShipVariable("Docked", e);
             Api.Ship.Landed.OnChange += (sender, e) => SetShipVariable("Landed", e);
@@ -161,8 +173,10 @@ namespace EliteVA
         private static string ToEventVariable(string variable) => $"EliteAPI.{variable}";
 
         private static string ToShipCommand(string command) => $"((EliteApi.Ship.{command}))";
-        
+
         private static string ToShipVariable(string variable) => $"EliteAPI.{variable}";
+
+        private static string ToBindingVariable(string variable) => $"EliteAPI.{variable}";
 
         private static void SetShipVariable<T>(string name, T value, bool triggerChangeCommand = true)
         {
@@ -237,6 +251,112 @@ namespace EliteVA
                 Proxy.Commands.Invoke(command).GetAwaiter().GetResult();
             }
             else { Log.LogDebug("Skipping '{Command}' for {Event}", command, source); }
+        }
+
+        private static void SetBindings(KeyBindings bindings, string layout = "")
+        {
+            Log.LogInformation("Using bindings preset {Bindings} ({Layout})", bindings.PresetName, bindings.KeyboardLayout);
+
+            layout = string.IsNullOrWhiteSpace(layout) ? "en-GB" : bindings.KeyboardLayout;
+
+            var layoutFile = new FileInfo(Path.Combine(PluginDir + $@"\Mappings\{layout}.yml"));
+            
+            Log.LogDebug("Using layout file '{Path}'", layoutFile.FullName);
+            
+            if (!layoutFile.Exists)
+            {
+                if (layout != "en-GB")
+                {
+                    Log.LogWarning("The mapping {Layout} does not exist, defaulting to en-GB", layout);
+                    SetBindings(bindings, "en-GB");
+                    return;
+                }
+                else
+                {
+                    Log.LogError("No default mappings could be found, cannot set keybindings");
+                    return;
+                }
+            }
+
+            BindingsLayout = ReadLayout(layoutFile);
+
+            foreach (var (name, value) in bindings.GetType().GetProperties().Select(x => (x.Name, x.GetValue(bindings))))
+            {
+                try
+                {
+                    var test1 = ((dynamic) value).Primary;
+                    var test2 = ((dynamic) value).Secondary;
+                }
+                catch (Exception ex)
+                {
+                    // Is not applicable, skip
+                    continue;
+                }
+
+                try
+                {
+                    KeyBindings.PrimaryBinding primary = ((dynamic) value).Primary;
+                    KeyBindings.SecondaryBinding secondary = ((dynamic) value).Secondary;
+
+                    if (string.IsNullOrWhiteSpace(primary.Key) && string.IsNullOrWhiteSpace(secondary.Key))
+                    {
+                        // Not in use, skip
+                        continue;
+                    }
+
+                    string key = primary.Key;
+                    KeyBindings.ModifierBinding modifier = primary.Modifier;
+
+                    if (primary.Device != "Keyboard")
+                    {
+                        if (secondary.Device == "Keyboard")
+                        {
+                            key = secondary.Key;
+                            modifier = secondary.Modifier;
+                        }
+                        else
+                        {
+                            // No keyboard bindings, skip
+                            continue;
+                        }
+                    }
+
+                    string mod = modifier != null ? modifier.Key : "";
+
+                    Proxy.Variables.Set(ToBindingVariable(name), GetKeyBinding(key, mod));
+                }
+                catch (Exception ex) { Log.LogWarning(ex, "Could not set binding for {Name}", name); }
+            }
+        }
+
+        static string GetKeyBinding(string key, string mod)
+        {
+            key = GetKey(key);
+            mod = GetKey(mod);
+
+            return mod + key;
+        }
+
+        static string GetKey(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key)) { return key; }
+
+            key = key.Replace("Key_", "");
+
+            key = BindingsLayout[key];
+
+            return $"[{key}]";
+        }
+
+        static IDictionary<string, string> ReadLayout(FileInfo layoutFile)
+        {
+            var entries = File.ReadAllLines(layoutFile.FullName).Where(x => !string.IsNullOrWhiteSpace(x) && x.Contains(":"));
+
+            var layout = new Dictionary<string, string>();
+
+            foreach (var entry in entries) { layout.Add(entry.Split(':')[0].Trim(), entry.Split(':')[1].Trim()); }
+
+            return layout;
         }
     }
 }

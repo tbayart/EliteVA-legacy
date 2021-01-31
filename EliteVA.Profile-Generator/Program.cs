@@ -22,6 +22,8 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
+using EliteAPI.Status.Ship.Abstractions;
+
 namespace EliteVA.ProfileGenerator
 {
     internal class Program
@@ -35,10 +37,7 @@ namespace EliteVA.ProfileGenerator
                     logger.SetMinimumLevel(LogLevel.Trace);
                     logger.AddPrettyConsole(ConsoleThemes.Code);
                 })
-                .ConfigureServices((context, service) =>
-                {
-                    service.AddEliteAPI();
-                })
+                .ConfigureServices((context, service) => { service.AddEliteAPI(); })
                 .Build();
 
 
@@ -70,23 +69,28 @@ namespace EliteVA.ProfileGenerator
             }
 
             List<Type> eventTypes = eaAssembly.GetTypes().Where(x => x.IsSubclassOf(typeof(EventBase)) && x.IsClass && !x.IsAbstract).ToList();
+            List<PropertyInfo> shipVars = typeof(IShip).GetProperties().ToList();
 
-            if (!eventTypes.Any())
-            {
-                _log.LogWarning("No event classes could be found");
-            }
-            else
-            {
-                _log.LogInformation("Found {amount} event classes", eventTypes.Count());
-            }
-
+            
+            if (!shipVars.Any()) { _log.LogWarning("No ship events could be found"); }
+            else { _log.LogInformation("Found {amount} ship events", shipVars.Count); }
+            
+            if (!eventTypes.Any()) { _log.LogWarning("No game events could be found"); }
+            else { _log.LogInformation("Found {amount} game events", eventTypes.Count); }
+            
             Profile profile = new Profile();
+            shipVars.ForEach(x =>
+            {
+                string name = $"((EliteAPI.Ship.{x.Name}))";
+                profile.AddCommand(new ProfileCommand(name, "EliteVA - Ship events"));
+            });
+
             eventTypes.ForEach(x =>
             {
                 string eventName = x.Name.Replace("Event", string.Empty);
                 string name = $"((EliteAPI.{eventName}))";
 
-                profile.AddCommand(new ProfileCommand(name, "EliteVA"));
+                profile.AddCommand(new ProfileCommand(name, "EliteVA - Game events"));
             });
 
             _log.LogDebug("Writing to EliteVA.vap");
@@ -100,10 +104,7 @@ namespace EliteVA.ProfileGenerator
 
                 _log.LogInformation("Profile created!");
             }
-            catch (Exception ex)
-            {
-                _log.LogCritical(ex, "Could not create profile");
-            }
+            catch (Exception ex) { _log.LogCritical(ex, "Could not create profile"); }
 
             await Task.Delay(-1);
         }
