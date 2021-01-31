@@ -172,7 +172,7 @@ namespace EliteVA
 
         private static string ToEventVariable(string variable) => $"EliteAPI.{variable}";
 
-        private static string ToShipCommand(string command) => $"((EliteApi.Ship.{command}))";
+        private static string ToShipCommand(string command) => $"((EliteApi.Status.{command}))";
 
         private static string ToShipVariable(string variable) => $"EliteAPI.{variable}";
 
