@@ -81,7 +81,7 @@ namespace EliteVA.ProfileGenerator
             Profile profile = new Profile();
             shipVars.ForEach(x =>
             {
-                string name = $"((EliteAPI.Ship.{x.Name}))";
+                string name = $"((EliteAPI.Status.{x.Name}))";
                 profile.AddCommand(new ProfileCommand(name, "EliteVA - Ship events"));
             });
 
