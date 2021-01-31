@@ -39,7 +39,7 @@
           <Private>True</Private>
         </Reference>
         <Reference Include="EliteAPI, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\packages\EliteAPI.3.0.0-alpha1055\lib\netstandard2.0\EliteAPI.dll</HintPath>
+          <HintPath>..\packages\EliteAPI.3.0.0-alpha1063\lib\netstandard2.0\EliteAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="FluentAssertions, Version=5.10.3.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">
