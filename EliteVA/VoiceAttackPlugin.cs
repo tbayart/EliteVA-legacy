@@ -233,14 +233,14 @@ namespace EliteVA
                         return;
 
                     default:
-                        string variable = ToEventVariable(name);
+                        string variable = ToEventVariable($"{eventName}.{name}");
                         Type type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                         object value = Convert.ChangeType(property.GetValue(instance), type);
                         Proxy.Variables.Set(variable, value);
                         break;
                 }
             }
-            catch (Exception ex) { Log.LogDebug(ex, "Could not set 'EliteAPI.Event.{Name}'", name); }
+            catch (Exception ex) { Log.LogDebug(ex, "Could not set 'EliteAPI.{EventName}.{Name}'", eventName, name); }
         }
 
         private static void TriggerCommand(string command, string source)
@@ -255,9 +255,9 @@ namespace EliteVA
 
         private static void SetBindings(KeyBindings bindings, string layout = "")
         {
-            Log.LogInformation("Using bindings preset {Bindings} ({Layout})", bindings.PresetName, bindings.KeyboardLayout);
-
-            layout = string.IsNullOrWhiteSpace(layout) ? "en-GB" : bindings.KeyboardLayout;
+            layout = !string.IsNullOrWhiteSpace(layout) ? layout : bindings.KeyboardLayout;            
+            
+            Log.LogInformation("Using bindings preset {Bindings} ({Layout})", bindings.PresetName, layout);
 
             var layoutFile = new FileInfo(Path.Combine(PluginDir + $@"\Mappings\{layout}.yml"));
             
