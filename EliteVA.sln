@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EliteVA.Profile-Generator",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteVA", "EliteVA\EliteVA.csproj", "{0D94F451-29A2-406C-B467-01328E0A1016}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteVA.Tests", "Tests\EliteVA.Tests\EliteVA.Tests.csproj", "{F922F6AC-34B3-4E95-900F-9ACDE36005F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{19CD15D1-3BBF-4BA5-A46E-29D4963D4569}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,11 +25,18 @@ Global
 		{0D94F451-29A2-406C-B467-01328E0A1016}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D94F451-29A2-406C-B467-01328E0A1016}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D94F451-29A2-406C-B467-01328E0A1016}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F922F6AC-34B3-4E95-900F-9ACDE36005F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F922F6AC-34B3-4E95-900F-9ACDE36005F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F922F6AC-34B3-4E95-900F-9ACDE36005F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F922F6AC-34B3-4E95-900F-9ACDE36005F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF187BDC-2FC8-4781-BCC4-B922F4B77BCE}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F922F6AC-34B3-4E95-900F-9ACDE36005F3} = {19CD15D1-3BBF-4BA5-A46E-29D4963D4569}
 	EndGlobalSection
 EndGlobal

@@ -12,8 +12,11 @@
     <PackageReference Include="EliteAPI" Version="3.0.0-alpha1071" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Somfic.Logging.Console" Version="1.0.4" />
     <PackageReference Include="Somfic.Logging.VoiceAttack" Version="1.1.0" />
     <PackageReference Include="Somfic.VoiceAttack" Version="1.1.0" />
+    <PackageReference Include="Valsom.Logging.PrettyConsole" Version="0.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EliteVA\EliteVA.csproj" />
   </ItemGroup>
 </Project>

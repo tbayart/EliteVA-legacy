@@ -39,11 +39,15 @@
           <Private>True</Private>
         </Reference>
         <Reference Include="EliteAPI, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\packages\EliteAPI.3.0.0-alpha1071\lib\netstandard2.0\EliteAPI.dll</HintPath>
+          <HintPath>..\packages\EliteAPI.3.0.0-alpha1100\lib\netstandard2.0\EliteAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="FluentAssertions, Version=5.10.3.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">
           <HintPath>..\packages\FluentAssertions.5.10.3\lib\net47\FluentAssertions.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Grpc.Core.Api, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d754f35622e28bad">
+          <HintPath>..\packages\Grpc.Core.Api.2.34.1\lib\net45\Grpc.Core.Api.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
@@ -73,6 +77,10 @@
         </Reference>
         <Reference Include="Microsoft.Extensions.Configuration.FileExtensions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
           <HintPath>..\packages\Microsoft.Extensions.Configuration.FileExtensions.5.0.0\lib\net461\Microsoft.Extensions.Configuration.FileExtensions.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Configuration.Ini, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+          <HintPath>..\packages\Microsoft.Extensions.Configuration.Ini.5.0.0\lib\net461\Microsoft.Extensions.Configuration.Ini.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.Extensions.Configuration.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
@@ -156,6 +164,14 @@
           <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
           <Private>True</Private>
         </Reference>
+        <Reference Include="protobuf-net, Version=2.4.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67">
+          <HintPath>..\packages\protobuf-net.2.4.6\lib\net40\protobuf-net.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="protobuf-net.Grpc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67">
+          <HintPath>..\packages\protobuf-net.Grpc.1.0.147\lib\net461\protobuf-net.Grpc.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
         <Reference Include="Somfic.Logging, Version=1.0.1.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\packages\Somfic.Logging.1.0.1\lib\netstandard2.0\Somfic.Logging.dll</HintPath>
           <Private>True</Private>
@@ -211,6 +227,7 @@
           <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
           <Private>True</Private>
         </Reference>
+        <Reference Include="System.Runtime.Serialization" />
         <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
           <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
           <Private>True</Private>
@@ -223,12 +240,17 @@
           <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
           <Private>True</Private>
         </Reference>
+        <Reference Include="System.ServiceModel" />
         <Reference Include="System.Text.Encodings.Web, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
           <HintPath>..\packages\System.Text.Encodings.Web.5.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
           <HintPath>..\packages\System.Text.Json.5.0.0\lib\net461\System.Text.Json.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="System.Threading.Channels, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+          <HintPath>..\packages\System.Threading.Channels.5.0.0\lib\net461\System.Threading.Channels.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
@@ -241,12 +263,36 @@
         </Reference>
         <Reference Include="System.Xml" />
         <Reference Include="System.Xml.Linq" />
+        <Reference Include="Valsom.AnsiBuilder, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\packages\Valsom.AnsiBuilder.0.1.0\lib\netstandard2.0\Valsom.AnsiBuilder.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
         <Reference Include="Valsom.Logging.File, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\packages\Valsom.Logging.File.0.1.0\lib\netstandard2.0\Valsom.Logging.File.dll</HintPath>
           <Private>True</Private>
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Bindings\Abstractions\IBindingsProcessor.cs" />
+        <Compile Include="Bindings\BindingsProcessor.cs" />
+        <Compile Include="Constants\Formatting\Abstractions\IFormatting.cs" />
+        <Compile Include="Constants\Formatting\Formats\BindingFormats.cs" />
+        <Compile Include="Constants\Formatting\Formats\EventFormat.cs" />
+        <Compile Include="Constants\Formatting\Formats\StatusFormats.cs" />
+        <Compile Include="Constants\Formatting\Formatting.cs" />
+        <Compile Include="Constants\Paths\Abstractions\IPaths.cs" />
+        <Compile Include="Constants\Paths\Paths.cs" />
+        <Compile Include="Constants\Proxy\Abstractions\IProxy.cs" />
+        <Compile Include="Constants\Proxy\Proxy.cs" />
+        <Compile Include="Event\Abstractions\IEventProcessor.cs" />
+        <Compile Include="Event\EventProcessor.cs" />
+        <Compile Include="Services\Command\Abstractions\ICommandService.cs" />
+        <Compile Include="Services\Command\CommandService.cs" />
+        <Compile Include="Services\Variable\Abstractions\IVariableService.cs" />
+        <Compile Include="Services\Variable\VariableService.cs" />
+        <Compile Include="Status\Abstractions\IStatusProcessor.cs" />
+        <Compile Include="Status\StatusProcessor.cs" />
+        <Compile Include="Variable.cs" />
         <Compile Include="VoiceAttackPlugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>

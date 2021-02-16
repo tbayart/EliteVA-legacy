@@ -8,21 +8,22 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using Somfic.Logging.Console;
-using Somfic.Logging.Console.Themes;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
 using System.Xml.Serialization;
 
 using EliteAPI.Status.Ship.Abstractions;
+
+using EliteVA.Constants.Formatting;
+using EliteVA.Constants.Formatting.Abstractions;
+
+using Valsom.Logging.PrettyConsole;
+using Valsom.Logging.PrettyConsole.Formats;
+using Valsom.Logging.PrettyConsole.Themes;
 
 namespace EliteVA.ProfileGenerator
 {
@@ -35,9 +36,13 @@ namespace EliteVA.ProfileGenerator
                 {
                     logger.ClearProviders();
                     logger.SetMinimumLevel(LogLevel.Trace);
-                    logger.AddPrettyConsole(ConsoleThemes.Code);
+                    logger.AddPrettyConsole(ConsoleFormats.Default, ConsoleThemes.Vanilla);
                 })
-                .ConfigureServices((context, service) => { service.AddEliteAPI(); })
+                .ConfigureServices((context, service) =>
+                {
+                    service.AddEliteAPI();
+                    service.AddTransient<IFormatting, Formatting>();
+                })
                 .Build();
 
 
@@ -52,10 +57,12 @@ namespace EliteVA.ProfileGenerator
     public class Core
     {
         private readonly ILogger<Core> _log;
+        private readonly IFormatting format;
 
-        public Core(ILogger<Core> log)
+        public Core(ILogger<Core> log, IFormatting format)
         {
             _log = log;
+            this.format = format;
         }
 
         public async Task Run()
@@ -68,7 +75,7 @@ namespace EliteVA.ProfileGenerator
                 return;
             }
 
-            List<Type> eventTypes = eaAssembly.GetTypes().Where(x => x.IsSubclassOf(typeof(EventBase)) && x.IsClass && !x.IsAbstract).ToList();
+            List<Type> eventTypes = eaAssembly.GetTypes().Where(x => typeof(IEvent).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract && !x.IsInterface).ToList();
             List<PropertyInfo> shipVars = typeof(IShip).GetProperties().ToList();
 
             
@@ -81,16 +88,16 @@ namespace EliteVA.ProfileGenerator
             Profile profile = new Profile();
             shipVars.ForEach(x =>
             {
-                string name = $"((EliteAPI.Status.{x.Name}))";
+                string name = format.Status.ToCommand(x.Name);
                 profile.AddCommand(new ProfileCommand(name, "EliteVA - Ship events"));
             });
 
             eventTypes.ForEach(x =>
             {
                 string eventName = x.Name.Replace("Event", string.Empty);
-                string name = $"((EliteAPI.{eventName}))";
+                string name = format.Events.ToCommand(eventName);
 
-                profile.AddCommand(new ProfileCommand(name, "EliteVA - Game events"));
+                profile.AddCommand(new ProfileCommand(name, $"EliteVA - events"));
             });
 
             _log.LogDebug("Writing to EliteVA.vap");
