@@ -31,8 +31,6 @@ namespace EliteVA.Services.Variable
         /// <inheritdoc />
         public void SetVariable(EliteVA.Variable variable)
         {
-            logger.LogDebug("Setting {name} to {value}", variable.Name, variable.Value);
-
             try
             {
                 proxy.GetProxy().Variables.Set(variable.Name, variable.Value);
@@ -42,7 +40,7 @@ namespace EliteVA.Services.Variable
                 if (!ActiveVariables.ContainsKey(variable.Name)) { ActiveVariables.Add(variable.Name, value); }
                 else { ActiveVariables[variable.Name] = value; }
                 
-                File.WriteAllLines(Path.Combine(paths.PluginDirectory.FullName, "ActiveVariables.txt"), ActiveVariables.Select(x => x.Key + ": " + x.Value));
+                File.WriteAllLines(Path.Combine(paths.PluginDirectory.FullName, "ActiveVariables.txt"), proxy.GetProxy().Variables.SetVariables.Select(x => x.Key + ": " + x.Value));
             }
             catch (Exception ex) { logger.LogDebug(ex, "Could not set variable {name} to {value}", variable.Name, variable.Value); }
 

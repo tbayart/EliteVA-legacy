@@ -91,7 +91,7 @@ namespace EliteVA
                 {
                     log.SetMinimumLevel(LogLevel.Trace);
                     VoiceAttackLoggerExtensions.AddVoiceAttack(log, vaProxy);
-                    log.AddPrettyConsole("EliteVA", new DirectoryInfo(PluginDir), FileNamingFormats.Default, FileFormats.Default);
+                    log.AddFile("EliteVA", PluginDir);
                 })
                 .ConfigureAppConfiguration((context, config) =>
                 {

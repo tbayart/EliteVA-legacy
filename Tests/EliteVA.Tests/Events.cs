@@ -11,7 +11,7 @@ using EliteVA.Services;
 using EliteVA.Services.Variable;
 
 using FluentAssertions;
-
+using Microsoft.Extensions.Logging;
 using Moq;
 
 using Xunit;
@@ -49,7 +49,7 @@ namespace EliteVA.Tests
         [MemberData(nameof(Data))]
         public void Name(IEvent e, string expectedCommand, IEnumerable<string> expectedVariables)
         {
-            IEventProcessor events = new EventProcessor(Mock.Of<IEliteDangerousApi>(), new Formatting(), Mock.Of<IVariableService>(), Mock.Of<ICommandService>());
+            IEventProcessor events = new EventProcessor( Mock.Of<ILogger<EventProcessor>>(), Mock.Of<IEliteDangerousApi>(), new Formatting(), Mock.Of<IVariableService>(), Mock.Of<ICommandService>());
 
             events.GetCommand(e).Should().Be(expectedCommand);
         }
@@ -58,7 +58,7 @@ namespace EliteVA.Tests
         [MemberData(nameof(Data))]
         public void Variables(IEvent e, string expectedCommand, IEnumerable<string> expectedVariables)
         {
-            IEventProcessor events = new EventProcessor(Mock.Of<IEliteDangerousApi>(), new Formatting(), Mock.Of<IVariableService>(), Mock.Of<ICommandService>());
+            IEventProcessor events = new EventProcessor(Mock.Of<ILogger<EventProcessor>>(),Mock.Of<IEliteDangerousApi>(), new Formatting(), Mock.Of<IVariableService>(), Mock.Of<ICommandService>());
 
             events.GetVariables(e).Select(x => x.Name).Should().Contain(expectedVariables);
         }
