@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="EliteAPI" Version="3.0.0-alpha1118" />
+        <PackageReference Include="EliteAPI" Version="3.0.0-alpha1123" />
         <PackageReference Include="FluentAssertions" Version="6.0.0-alpha0002" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
         <PackageReference Include="Moq" Version="4.16.0" />

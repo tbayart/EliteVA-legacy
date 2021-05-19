@@ -75,7 +75,14 @@ namespace EliteVA.VoiceAttackProxy.Variables
                 case TypeCode.UInt32:
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
-                    SetInt(name, (int) Convert.ChangeType(value, typeof(int)));
+                    try
+                    {
+                        SetInt(name, (int) Convert.ChangeType(value, typeof(int)));
+                    }
+                    catch (OverflowException ex)
+                    {
+                        SetDecimal(name, (decimal) Convert.ChangeType(value, typeof(decimal)));
+                    } 
                     break;
 
                 case TypeCode.Object:
