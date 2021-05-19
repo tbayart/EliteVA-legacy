@@ -3,8 +3,8 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>3.0.0.0</FileVersion>
-    <InformationalVersion>3.0.0-alpha.1101+Branch.dev.Sha.72d00c220149fa3b58028149773f5974ce9c22b9</InformationalVersion>
-    <Version>3.0.0-alpha1101</Version>
+    <InformationalVersion>3.0.0-alpha.1122+Branch.dev.Sha.5d24734d2bbb74601345b1db424af6c3baadf5be</InformationalVersion>
+    <Version>3.0.0-alpha1122</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
