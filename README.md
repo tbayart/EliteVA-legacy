@@ -74,15 +74,13 @@ Make sure **Plugin Support** is enabled in VoiceAttack. After restarting VoiceAt
 
 EliteVA converts a ton of in-game events to macro commands. For example, retracting your gear will trigger the `((EliteAPI.Ship.Gear))` command, while cracking an ateriod will trigger the `((EliteAPI.AsteroidCracked))` event.
 
-A list of all supported in-game events can be found [on the documentation website](https://docs.somfic.com/project/eliteapi/eliteva).
-
 ## Variables
 ```
 {BOOl:EliteAPI.Gear}
 ```
 A number of variables are made available through EliteVA, these variables are synced with the game. For example, `{BOOl:EliteAPI.Gear}` holds the the value of the ship's landing gear, and `{BOOL:MassLocked}` contains information on whether or not you're currently mass-locked.
 
-A list of all supported variables can be found [on the documentation website](https://docs.somfic.com/project/eliteapi/eliteva).
+A list of all active variables are written to the `ActiveVariables.txt` file in your installation directory.
 
 ## Bindings
 ```
@@ -92,4 +90,6 @@ Variable keypress: [EliteAPI.LandingGearToggle]
 All in-game keybindings are made available through EliteVA and are updated whenever a change is made to the keybindings preset in-game. 
 Instead of traditionally having VoiceAttack press `G` when you want to retract the landing gear, your macro can press the actual key assigned to the gear using the `{TXT:EliteAPI.LandingGearToggle}` variable.
 
-A list of all supported keybindings can be found [on the documentation website](https://docs.somfic.com/project/eliteapi/eliteva).
+A list of all supported keybindings can be found in the `ActiveVariables.txt` file in your installation directory.
+
+**Disclaimer**: VoiceAttack does not support external Joystick or Hotas triggers, so the plugin will only expose keyboard keybindings, either primary or secondary. 
