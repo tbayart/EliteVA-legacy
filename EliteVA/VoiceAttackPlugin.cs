@@ -22,12 +22,13 @@ using EliteVA.Services;
 using EliteVA.Services.Variable;
 using EliteVA.Status;
 using EliteVA.Status.Abstractions;
-
+using EliteVA.Support;
+using EliteVA.Support.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
+using Newtonsoft.Json;
 using Valsom.Logging.File;
 using Valsom.Logging.File.Formats;
 
@@ -51,7 +52,14 @@ namespace EliteVA
 
         public static void VA_Init1(dynamic vaProxy)
         {
-            Initialize(vaProxy);
+            try
+            {
+                Initialize(vaProxy);
+            }
+            catch (Exception ex)
+            {
+                File.WriteAllText("eliteva.error.json", JsonConvert.SerializeObject(ex));
+            }
         }
 
         public static void VA_Exit1(dynamic vaProxy)
@@ -79,6 +87,7 @@ namespace EliteVA
                     services.AddTransient<IPaths, Paths>();
 
                     services.AddSingleton<IStatusProcessor, StatusProcessor>();
+                    services.AddSingleton<ISupportProcessor, SupportProcessor>();
                     services.AddSingleton<IEventProcessor, EventProcessor>();
                     services.AddSingleton<IBindingsProcessor, BindingsProcessor>();
 
@@ -107,12 +116,14 @@ namespace EliteVA
 
             var events = Host.Services.GetRequiredService<IEventProcessor>();
             var status = Host.Services.GetRequiredService<IStatusProcessor>();
+            var support = Host.Services.GetRequiredService<ISupportProcessor>();
             var bindings = Host.Services.GetRequiredService<IBindingsProcessor>();
 
             api.InitializeAsync().GetAwaiter().GetResult();
             
             events.Bind();
             status.Bind();
+            support.Bind();
             bindings.Bind();
 
             api.StartAsync();

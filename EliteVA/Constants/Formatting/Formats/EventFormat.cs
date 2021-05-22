@@ -1,4 +1,5 @@
 using EliteAPI.Event.Models.Abstractions;
+using EliteVA.Constants.Formatting.Abstractions;
 
 namespace EliteVA.Constants.Formatting.Formats
 {

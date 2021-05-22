@@ -14,8 +14,7 @@ namespace EliteVA.Event.Abstractions
         /// <summary>
         /// Generates the event's properties as VoiceAttack variables
         /// </summary>
-        /// <param name="e"></param>
-        IEnumerable<Variable> GetVariables(IEvent e);
+        IEnumerable<Variable> GetVariables(string eventName, string json);
         
         /// <summary>
         /// Generates a VoiceAttack event command

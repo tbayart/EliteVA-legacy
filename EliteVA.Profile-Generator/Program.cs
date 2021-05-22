@@ -15,7 +15,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-
+using EliteAPI.Status.Abstractions;
+using EliteAPI.Status.Commander.Abstractions;
 using EliteAPI.Status.Ship.Abstractions;
 
 using EliteVA.Constants.Formatting;
@@ -75,12 +76,18 @@ namespace EliteVA.ProfileGenerator
                 return;
             }
 
-            List<Type> eventTypes = eaAssembly.GetTypes().Where(x => typeof(IEvent).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract && !x.IsInterface).ToList();
+            List<Type> eventTypes = eaAssembly.GetTypes().Where(x => typeof(IEvent).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract && !x.IsInterface && !x.Name.StartsWith("Raw")).ToList();
             List<PropertyInfo> shipVars = typeof(IShip).GetProperties().ToList();
+            shipVars.AddRange(typeof(ICommander).GetProperties().ToList());
+            shipVars = shipVars.Where(x => !x.Name.Contains("Flags")).ToList();
 
-            
+            List<Type> shipEvents = eaAssembly.GetTypes().Where(x => typeof(IStatus).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract && !x.IsInterface).ToList();
+
             if (!shipVars.Any()) { _log.LogWarning("No ship events could be found"); }
             else { _log.LogInformation("Found {amount} ship events", shipVars.Count); }
+            
+            if (!shipEvents.Any()) { _log.LogWarning("No support events could be found"); }
+            else { _log.LogInformation("Found {amount} support events", shipEvents.Count); }
             
             if (!eventTypes.Any()) { _log.LogWarning("No game events could be found"); }
             else { _log.LogInformation("Found {amount} game events", eventTypes.Count); }
@@ -89,7 +96,15 @@ namespace EliteVA.ProfileGenerator
             shipVars.ForEach(x =>
             {
                 string name = format.Status.ToCommand(x.Name);
+                
                 profile.AddCommand(new ProfileCommand(name, "EliteVA - Ship events"));
+            });
+            
+            shipEvents.ForEach(x =>
+            {
+                string name = format.Status.ToCommand(x.Name);
+
+                profile.AddCommand(new ProfileCommand(name, $"EliteVA - Support events"));
             });
 
             eventTypes.ForEach(x =>
@@ -97,7 +112,7 @@ namespace EliteVA.ProfileGenerator
                 string eventName = x.Name.Replace("Event", string.Empty);
                 string name = format.Events.ToCommand(eventName);
 
-                profile.AddCommand(new ProfileCommand(name, $"EliteVA - events"));
+                profile.AddCommand(new ProfileCommand(name, $"EliteVA - Game events"));
             });
 
             _log.LogDebug("Writing to EliteVA.vap");
@@ -105,7 +120,7 @@ namespace EliteVA.ProfileGenerator
             try
             {
                 XmlSerializer xs = new XmlSerializer(typeof(Profile));
-                TextWriter txtWriter = new StreamWriter("EliteVA.vap");
+                TextWriter txtWriter = new StreamWriter(@"C:\Program Files (x86)\Steam\steamapps\common\VoiceAttack\Apps\EliteVA\EliteVA.vap");
                 xs.Serialize(txtWriter, profile);
                 txtWriter.Close();
 

@@ -39,7 +39,7 @@
           <Private>True</Private>
         </Reference>
         <Reference Include="EliteAPI, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\packages\EliteAPI.3.0.0-alpha1123\lib\netstandard2.0\EliteAPI.dll</HintPath>
+          <HintPath>..\packages\EliteAPI.3.0.0-alpha1130\lib\netstandard2.0\EliteAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="FluentAssertions, Version=5.10.3.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">
@@ -356,6 +356,7 @@
         <Compile Include="Constants\Formatting\Formats\BindingFormats.cs" />
         <Compile Include="Constants\Formatting\Formats\EventFormat.cs" />
         <Compile Include="Constants\Formatting\Formats\StatusFormats.cs" />
+        <Compile Include="Constants\Formatting\Formats\SupportFormat.cs" />
         <Compile Include="Constants\Formatting\Formatting.cs" />
         <Compile Include="Constants\Paths\Abstractions\IPaths.cs" />
         <Compile Include="Constants\Paths\Paths.cs" />
@@ -369,6 +370,8 @@
         <Compile Include="Services\Variable\VariableService.cs" />
         <Compile Include="Status\Abstractions\IStatusProcessor.cs" />
         <Compile Include="Status\StatusProcessor.cs" />
+        <Compile Include="Support\Abstractions\ISupportProcessor.cs" />
+        <Compile Include="Support\SupportProcessor.cs" />
         <Compile Include="Variable.cs" />
         <Compile Include="VoiceAttackPlugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />

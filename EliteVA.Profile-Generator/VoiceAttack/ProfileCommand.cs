@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EliteVA.ProfileGenerator.VoiceAttack
 {
@@ -35,6 +37,13 @@ namespace EliteVA.ProfileGenerator.VoiceAttack
             ProcessOverrideActiveWindow = true;
             LostFocusBackCompat = true;
             MousePassThru = true;
+
+            ActionSequence = new CommandAction[0];
+        }
+
+        public void AddAction(CommandAction commandAction)
+        {
+            actionSequenceField.Add(commandAction);
         }
 
         private object referrerField;
@@ -81,7 +90,7 @@ namespace EliteVA.ProfileGenerator.VoiceAttack
 
         private string commandStringField;
 
-        private object actionSequenceField;
+        private IList<CommandAction> actionSequenceField;
 
         private bool asyncField;
 
@@ -375,10 +384,10 @@ namespace EliteVA.ProfileGenerator.VoiceAttack
         }
 
         /// <remarks/>
-        public object ActionSequence
+        public CommandAction[] ActionSequence
         {
-            get => actionSequenceField;
-            set => actionSequenceField = value;
+            get => actionSequenceField.ToArray();
+            set => actionSequenceField = value.ToList();
         }
 
         /// <remarks/>
