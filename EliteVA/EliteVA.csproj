@@ -39,7 +39,7 @@
           <Private>True</Private>
         </Reference>
         <Reference Include="EliteAPI, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\packages\EliteAPI.3.0.0-alpha1130\lib\netstandard2.0\EliteAPI.dll</HintPath>
+          <HintPath>..\packages\EliteAPI.3.0.0-alpha1134\lib\netstandard2.0\EliteAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="FluentAssertions, Version=5.10.3.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">
@@ -362,6 +362,8 @@
         <Compile Include="Constants\Paths\Paths.cs" />
         <Compile Include="Constants\Proxy\Abstractions\IProxy.cs" />
         <Compile Include="Constants\Proxy\Proxy.cs" />
+        <Compile Include="EDDB\HopsRequest.cs" />
+        <Compile Include="EDDB\HopsResponse.cs" />
         <Compile Include="Event\Abstractions\IEventProcessor.cs" />
         <Compile Include="Event\EventProcessor.cs" />
         <Compile Include="Services\Command\Abstractions\ICommandService.cs" />

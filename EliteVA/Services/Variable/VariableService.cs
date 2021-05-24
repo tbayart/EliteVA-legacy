@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using EliteVA.Constants.Paths.Abstractions;
 using EliteVA.Constants.Proxy.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -11,8 +12,6 @@ namespace EliteVA.Services.Variable
 {
     public class VariableService : IVariableService
     {
-        private IDictionary<string, string> ActiveVariables { get; }
-
         private readonly ILogger<VariableService> logger;
         private readonly IProxy proxy;
         private readonly IPaths paths;
@@ -22,8 +21,6 @@ namespace EliteVA.Services.Variable
             this.logger = logger;
             this.proxy = proxy;
             this.paths = paths;
-
-            ActiveVariables = new Dictionary<string, string>();
         }
 
         /// <inheritdoc />
@@ -32,20 +29,9 @@ namespace EliteVA.Services.Variable
             try
             {
                 proxy.GetProxy().Variables.Set(variable.Name, variable.Value);
-
-                string value = variable.Value != null ? variable.Value.ToString() : "";
-
-                if (!ActiveVariables.ContainsKey(variable.Name))
-                {
-                    ActiveVariables.Add(variable.Name, value);
-                }
-                else
-                {
-                    ActiveVariables[variable.Name] = value;
-                }
-
-                File.WriteAllLines(Path.Combine(paths.PluginDirectory.FullName, "ActiveVariables.txt"),
-                    proxy.GetProxy().Variables.SetVariables.Select(x => x.Key + ": " + x.Value));
+                
+                var allVariables = proxy.GetProxy().Variables.SetVariables.Select(x => x.Key + ": " + x.Value);
+                File.WriteAllLines(Path.Combine(paths.PluginDirectory.FullName, "ActiveVariables.txt"), allVariables);
             }
             catch (Exception ex)
             {
