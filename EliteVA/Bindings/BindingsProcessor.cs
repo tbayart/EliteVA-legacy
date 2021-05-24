@@ -49,7 +49,7 @@ namespace EliteVA.Bindings
                 else
                 {
                     var variable = GetVariables(api.Bindings.Active, layout);
-                    variables.SetVariables(variable);
+                    variables.SetVariables("Bindings", variable);
                 }
             };
         }

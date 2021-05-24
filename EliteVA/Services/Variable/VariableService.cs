@@ -24,14 +24,11 @@ namespace EliteVA.Services.Variable
         }
 
         /// <inheritdoc />
-        public void SetVariable(EliteVA.Variable variable)
+        public void SetVariable(string category, EliteVA.Variable variable)
         {
             try
             {
-                proxy.GetProxy().Variables.Set(variable.Name, variable.Value);
-                
-                var allVariables = proxy.GetProxy().Variables.SetVariables.Select(x => x.Key + ": " + x.Value);
-                File.WriteAllLines(Path.Combine(paths.PluginDirectory.FullName, "ActiveVariables.txt"), allVariables);
+                proxy.GetProxy().Variables.Set(category, variable.Name, variable.Value); 
             }
             catch (Exception ex)
             {
@@ -40,15 +37,18 @@ namespace EliteVA.Services.Variable
         }
 
         /// <inheritdoc />
-        public void SetVariables(IEnumerable<EliteVA.Variable> variablesEnumerable)
+        public void SetVariables(string category, IEnumerable<EliteVA.Variable> variablesEnumerable)
         {
             try
             {
                 var variables = variablesEnumerable.ToList();
                 foreach (var variable in variables)
                 {
-                    SetVariable(variable);
-                }
+                    SetVariable(category, variable);
+                }   
+                
+                var setVariables = proxy.GetProxy().Variables.SetVariables.GroupBy(x => x.Key.category).ToList();
+                setVariables.ForEach(x =>  File.WriteAllLines(Path.Combine(paths.PluginDirectory.FullName, x.Key + ".txt"), x.Select(y=> y.Key.name + ": " + y.Value)));
             }
             catch (Exception ex)
             {

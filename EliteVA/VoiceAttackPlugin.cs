@@ -83,53 +83,53 @@ namespace EliteVA
 
         public static void VA_Invoke1(dynamic vaProxy)
         {
-            try
-            {
-                var proxy = Proxy.SetProxy(vaProxy);
-
-                if (proxy.Context.ToLower() == "eddb.route")
-                {
-                    var starSystem = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.StarSystem");
-                    var startStation = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.StartStation");
-                    var maxHopDistance = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.MaxHopDistance");
-                    var hopCount = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.HopCount");
-                    var cargoCapacity = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.CargoCapacity");
-                    var availableCredits = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.AvailableCredits");
-                    var pad = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.Pad");
-                    var maxDistance = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.MaxDistance");
-                    var planetary = proxy.Variables.Get<bool>("EliteAPI.EDDB.Request.Planetary");
-
-                    var hopsRequest = new HopsRequest(starSystem, startStation, maxHopDistance, hopCount, cargoCapacity, availableCredits, pad, maxDistance, planetary);
-                    var content = JsonConvert.SerializeObject(hopsRequest);
-                    var result = Client.PostAsync("https://eddb.io/route/search/hops",
-                        new StringContent(content, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
-                    result.EnsureSuccessStatusCode();
-                    var response =
-                        JsonConvert.DeserializeObject<JObject>(result.Content.ReadAsStringAsync().GetAwaiter()
-                            .GetResult());
-                    
-                    Variables.SetVariables(Variables.GetPaths(response).Select(x => new Variable($"EliteAPI.EDDB.Response.{x.Name}", x.Value)));
-                }
-
-                else if (proxy.Context.ToLower() == "eddb.system")
-                {
-                    string name = proxy.Variables.Get<string>("EliteAPI.EDDB.Request.Name");
-
-                    var request = new HttpRequestMessage(HttpMethod.Get, "https://eddb.io/system/search?system%5Bname%5D=" + name);
-                    var result = Client.SendAsync(request).GetAwaiter().GetResult();
-                    
-                    result.EnsureSuccessStatusCode();
-                    var response =
-                        JsonConvert.DeserializeObject<JArray>(result.Content.ReadAsStringAsync().GetAwaiter()
-                            .GetResult());
-                    
-                    Variables.SetVariables(Variables.GetPaths(response).Select(x => new Variable($"EliteAPI.EDDB.Response.{x.Name}", x.Value)));
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.LogWarning(ex, "Could not execute function");
-            }
+            // try
+            // {
+            //     var proxy = Proxy.SetProxy(vaProxy);
+            //
+            //     if (proxy.Context.ToLower() == "eddb.route")
+            //     {
+            //         var starSystem = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.StarSystem");
+            //         var startStation = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.StartStation");
+            //         var maxHopDistance = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.MaxHopDistance");
+            //         var hopCount = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.HopCount");
+            //         var cargoCapacity = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.CargoCapacity");
+            //         var availableCredits = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.AvailableCredits");
+            //         var pad = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.Pad");
+            //         var maxDistance = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.MaxDistance");
+            //         var planetary = proxy.Variables.Get<bool>("EliteAPI.EDDB.Request.Planetary");
+            //
+            //         var hopsRequest = new HopsRequest(starSystem, startStation, maxHopDistance, hopCount, cargoCapacity, availableCredits, pad, maxDistance, planetary);
+            //         var content = JsonConvert.SerializeObject(hopsRequest);
+            //         var result = Client.PostAsync("https://eddb.io/route/search/hops",
+            //             new StringContent(content, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
+            //         result.EnsureSuccessStatusCode();
+            //         var response =
+            //             JsonConvert.DeserializeObject<JObject>(result.Content.ReadAsStringAsync().GetAwaiter()
+            //                 .GetResult());
+            //         
+            //         Variables.SetVariables(Variables.GetPaths(response).Select(x => new Variable($"EliteAPI.EDDB.Response.{x.Name}", x.Value)));
+            //     }
+            //
+            //     else if (proxy.Context.ToLower() == "eddb.system")
+            //     {
+            //         string name = proxy.Variables.Get<string>("EliteAPI.EDDB.Request.Name");
+            //
+            //         var request = new HttpRequestMessage(HttpMethod.Get, "https://eddb.io/system/search?system%5Bname%5D=" + name);
+            //         var result = Client.SendAsync(request).GetAwaiter().GetResult();
+            //         
+            //         result.EnsureSuccessStatusCode();
+            //         var response =
+            //             JsonConvert.DeserializeObject<JArray>(result.Content.ReadAsStringAsync().GetAwaiter()
+            //                 .GetResult());
+            //         
+            //         Variables.SetVariables(Variables.GetPaths(response).Select(x => new Variable($"EliteAPI.EDDB.Response.{x.Name}", x.Value)));
+            //     }
+            // }
+            // catch (Exception ex)
+            // {
+            //     Log.LogWarning(ex, "Could not execute function");
+            // }
         }
 
         private static void Initialize(dynamic vaProxy)

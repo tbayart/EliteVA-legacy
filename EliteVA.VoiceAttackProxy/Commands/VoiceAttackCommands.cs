@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EliteVA.VoiceAttackProxy.Variables;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,7 @@ namespace EliteVA.VoiceAttackProxy.Commands
     {
         private readonly dynamic _proxy;
         private readonly ILogger<VoiceAttackCommands> _log;
-        
+
         internal VoiceAttackCommands(dynamic proxy, IServiceProvider services)
         {
             _proxy = proxy;

@@ -9,9 +9,9 @@ namespace EliteVA.VoiceAttackProxy.Variables
     {
         private readonly dynamic _proxy;
 
-        private Dictionary<string, string> _setVariables;
+        private Dictionary<(string category, string name), string> _setVariables;
 
-        public IReadOnlyDictionary<string, string> SetVariables => _setVariables;
+        public IReadOnlyDictionary<(string category, string name), string> SetVariables => _setVariables;
 
         public ILogger<VoiceAttackVariables> _log;
         
@@ -20,7 +20,7 @@ namespace EliteVA.VoiceAttackProxy.Variables
             _proxy = vaProxy;
             _log = services.GetService<ILogger<VoiceAttackVariables>>();
 
-            _setVariables = new Dictionary<string, string>();
+            _setVariables = new Dictionary<(string, string), string>();
         }
 
         /// <summary>
@@ -29,10 +29,10 @@ namespace EliteVA.VoiceAttackProxy.Variables
         /// <typeparam name="T">The type of variable</typeparam>
         /// <param name="name">The name of the variable</param>
         /// <param name="value">The value of the variable</param>
-        public void Set<T>(string name, T value)
+        public void Set<T>(string category, string name, T value)
         {
             TypeCode code = Convert.GetTypeCode(value);
-            Set(name, value, code);
+            Set(category, name, value, code);
         }
 
         /// <summary>
@@ -41,34 +41,34 @@ namespace EliteVA.VoiceAttackProxy.Variables
         /// <param name="name">The name of the variable</param>
         /// <param name="value">The value of the variable</param>
         /// <param name="code">The type of variable</param>
-        public void Set(string name, object value, TypeCode code)
+        public void Set(string category, string name, object value, TypeCode code)
         {
             switch (code)
             {
                 case TypeCode.Boolean:
-                    SetBoolean(name, (bool) Convert.ChangeType(value, typeof(bool)));
+                    SetBoolean(category, name, (bool) Convert.ChangeType(value, typeof(bool)));
                     break;
 
                 case TypeCode.DateTime:
-                    SetDate(name, (DateTime) Convert.ChangeType(value, typeof(DateTime)));
+                    SetDate(category, name, (DateTime) Convert.ChangeType(value, typeof(DateTime)));
                     break;
 
                 case TypeCode.Single:
                 case TypeCode.Decimal:
                 case TypeCode.Double:
-                    SetDecimal(name, (decimal) Convert.ChangeType(value, typeof(decimal)));
+                    SetDecimal(category, name, (decimal) Convert.ChangeType(value, typeof(decimal)));
                     break;
 
                 case TypeCode.Char:
                 case TypeCode.String:
-                    SetText(name, (string) Convert.ChangeType(value, typeof(string)));
+                    SetText(category, name, (string) Convert.ChangeType(value, typeof(string)));
                     break;
 
                 case TypeCode.Byte:
                 case TypeCode.Int16:
                 case TypeCode.UInt16:
                 case TypeCode.SByte:
-                    SetShort(name, (short) Convert.ChangeType(value, typeof(short)));
+                    SetShort(category, name, (short) Convert.ChangeType(value, typeof(short)));
                     break;
 
                 case TypeCode.Int32:
@@ -77,17 +77,17 @@ namespace EliteVA.VoiceAttackProxy.Variables
                 case TypeCode.UInt64:
                     try
                     {
-                        SetInt(name, (int) Convert.ChangeType(value, typeof(int)));
+                        SetInt(category, name, (int) Convert.ChangeType(value, typeof(int)));
                     }
                     catch (OverflowException ex)
                     {
-                        SetDecimal(name, (decimal) Convert.ChangeType(value, typeof(decimal)));
+                        SetDecimal(category, name, (decimal) Convert.ChangeType(value, typeof(decimal)));
                     } 
                     break;
 
                 case TypeCode.Object:
                     var newCode = Convert.GetTypeCode(value);
-                    Set(name, value, newCode);
+                    Set(category, name, value, newCode);
                     break;
 
                 case TypeCode.Empty:
@@ -168,60 +168,60 @@ namespace EliteVA.VoiceAttackProxy.Variables
             return _proxy.GetDate(name);
         }
 
-        private void SetShort(string name, short? value)
+        private void SetShort(string category, string name, short? value)
         {
             string variable = $"{{SHORT:{name}}}";
-            SetVariable(variable, value.ToString());
+            SetVariable(category, variable, value.ToString());
 
             _proxy.SetSmallInt(name, value);
         }
 
-        private void SetInt(string name, int? value)
+        private void SetInt(string category, string name, int? value)
         {
             string variable = $"{{INT:{name}}}";
-            SetVariable(variable, value.ToString());
+            SetVariable(category, variable, value.ToString());
 
             _proxy.SetInt(name, value);
         }
 
-        private void SetText(string name, string value)
+        private void SetText(string category, string name, string value)
         {
             string variable = $"{{TXT:{name}}}";
-            SetVariable(variable, value.ToString());
+            SetVariable(category, variable, value.ToString());
 
             _proxy.SetText(name, value);
         }
 
-        private void SetDecimal(string name, decimal? value)
+        private void SetDecimal(string category, string name, decimal? value)
         {
             string variable = $"{{DEC:{name}}}";
-            SetVariable(variable, value.ToString());
+            SetVariable(category, variable, value.ToString());
 
             _proxy.SetDecimal(name, value);
         }
 
-        private void SetBoolean(string name, bool? value)
+        private void SetBoolean(string category, string name, bool? value)
         {
             string variable = $"{{BOOL:{name}}}";
-            SetVariable(variable, value.ToString());
+            SetVariable(category, variable, value.ToString());
 
             _proxy.SetBoolean(name, value);
         }
 
-        private void SetDate(string name, DateTime? value)
+        private void SetDate(string category, string name, DateTime? value)
         {
             string variable = $"{{DATE:{name}}}";
-            SetVariable(variable, value.ToString());
+            SetVariable(category, variable, value.ToString());
 
             _proxy.SetDate(name, value);
         }
 
-        private void SetVariable(string name, string value)
+        private void SetVariable(string category, string name, string value)
         {
             _log.LogTrace("Setting '{Name}' to '{Value}'", name, value);
             
-            if (_setVariables.ContainsKey(name)) { _setVariables[name] = value; }
-            else { _setVariables.Add(name, value); }
+            if (_setVariables.ContainsKey((category, name))) { _setVariables[(category, name)] = value; }
+            else { _setVariables.Add((category, name), value); }
         }
     }
 }

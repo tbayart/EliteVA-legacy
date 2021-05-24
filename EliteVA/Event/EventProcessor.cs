@@ -54,12 +54,8 @@ namespace EliteVA.Event
                     var variable = GetVariables(e.Event, json);
                     var command = GetCommand(e);
 
-                    variables.SetVariables(variable);
-
-                    if (api.HasCatchedUp)
-                    {
-                        commands.InvokeCommand(command);
-                    }
+                    variables.SetVariables("Events", variable);
+                    commands.InvokeCommand(command, !api.HasCatchedUp);
                 }
                 catch (Exception ex)
                 {

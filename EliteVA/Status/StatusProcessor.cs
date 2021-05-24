@@ -112,8 +112,7 @@ namespace EliteVA.Status
         {
             var statusVariables = GetVariables(name, value);
             var command = GetCommand(name);
-
-            foreach (var variable in statusVariables) { variables.SetVariable(variable); }
+            variables.SetVariables("Status", statusVariables);
 
             commands.InvokeCommand(command);
         }
