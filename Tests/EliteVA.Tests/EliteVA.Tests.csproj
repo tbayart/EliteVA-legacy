@@ -4,8 +4,8 @@
     <IsPackable>false</IsPackable>
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>3.0.0.0</FileVersion>
-    <InformationalVersion>3.0.0-alpha.1124+Branch.dev.Sha.44be70da27715cae77afcd4e3c6e7837385a9de6</InformationalVersion>
-    <Version>3.0.0-alpha1124</Version>
+    <InformationalVersion>3.0.0-alpha.1127+Branch.dev.Sha.0a354ad2a345eba0bb952e1cf71308fbb3e3b3cf</InformationalVersion>
+    <Version>3.0.0-alpha1127</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EliteAPI" Version="3.0.0-alpha1134" />
