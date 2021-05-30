@@ -1,8 +1,9 @@
 using System;
+using System.Xml.Linq;
 
 namespace EliteVA
 {
-    public struct Variable
+    public class Variable
     {
         public Variable(string name, string value)
         {
@@ -45,7 +46,6 @@ namespace EliteVA
             Name = name;
             Value = value;
         }
-
 
         public string Name { get; set; }
         public object Value { get; }

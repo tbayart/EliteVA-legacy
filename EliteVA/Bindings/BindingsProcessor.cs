@@ -3,33 +3,35 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
+using System.Xml;
+using System.Xml.Linq;
 using EliteAPI.Abstractions;
 using EliteAPI.Event.Models.Abstractions;
 using EliteAPI.Options.Bindings.Models;
-
+using EliteAPI.Options.Processor.Abstractions;
 using EliteVA.Bindings.Abstractions;
 using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.Constants.Paths.Abstractions;
 using EliteVA.Services;
 using EliteVA.Services.Variable;
-
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace EliteVA.Bindings
 {
     public class BindingsProcessor : IBindingsProcessor
     {
         private readonly ILogger<BindingsProcessor> log;
-        private readonly IEliteDangerousApi api;
+        private readonly IOptionsProcessor optionsProcessor;
         private readonly IFormatting formats;
         private readonly IVariableService variables;
         private readonly IPaths paths;
 
-        public BindingsProcessor(ILogger<BindingsProcessor> log, IEliteDangerousApi api, IFormatting formats, IVariableService variables, IPaths paths)
+        public BindingsProcessor(ILogger<BindingsProcessor> log, IOptionsProcessor optionsProcessor,
+            IFormatting formats, IVariableService variables, IPaths paths)
         {
             this.log = log;
-            this.api = api;
+            this.optionsProcessor = optionsProcessor;
             this.formats = formats;
             this.variables = variables;
             this.paths = paths;
@@ -38,107 +40,160 @@ namespace EliteVA.Bindings
         /// <inheritdoc />
         public void Bind()
         {
-            api.Bindings.OnChange += (sender, e) =>
+            optionsProcessor.BindingsUpdated += (sender, e) =>
             {
-                var layout = ReadLayout(paths.MappingsDirectory.FullName, api.Bindings.Active.KeyboardLayout);
+                try
+                {
+                    log.LogDebug("Updating bindings ...");
+                    var xml = XElement.Parse(e);
 
-                if (layout == default)
-                {
-                    log.LogWarning("Cannot set keybindings. Could not find {Layout}.yml or en-GB.yml in {Bindings}", api.Bindings.Active.KeyboardLayout, paths.MappingsDirectory.FullName);
+                    var layout = GetLayout(xml);
+                    var mapping = GetMapping(layout);
+                    var keys = GetVariables(xml, mapping).ToList();
+
+                    variables.SetVariables("Bindings", keys);
                 }
-                else
+                catch (Exception ex)
                 {
-                    var variable = GetVariables(api.Bindings.Active, layout);
-                    variables.SetVariables("Bindings", variable);
+                    log.LogWarning(ex, "Could not set keybindings");
                 }
             };
         }
 
-        /// <inheritdoc />
-        public IDictionary<string, string> ReadLayout(string mappingsPath, string keyboardLayout)
+        public string GetLayout(XElement xml)
         {
-            var layoutFile = new FileInfo(Path.Combine(mappingsPath, $"{keyboardLayout}.yml"));
-
-            log.LogDebug("Reading layout {Path}", layoutFile.FullName);
-            
-            // If the bindings file doesn't exist and we haven't tried en-GB, try en-GB
-            if (!layoutFile.Exists) { return keyboardLayout != "en-GB" ? ReadLayout(mappingsPath, "en-GB") : default; }
-
-            var entries = File.ReadAllLines(layoutFile.FullName).Where(x => !string.IsNullOrWhiteSpace(x) && x.Contains(":"));
-            return entries.ToDictionary(entry => entry.Split(':')[0].Trim(), entry => entry.Split(':')[1].Trim());
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<Variable> GetVariables(KeyBindings bindings, IDictionary<string, string> layout)
-        {
-            return bindings.GetType().GetProperties().Select(x => GetVariable(x, api.Bindings.Active, layout)).Where(x => !string.IsNullOrWhiteSpace(x.Name));
-        }
-
-        private Variable GetVariable(PropertyInfo property, object instance, IDictionary<string, string> layout)
-        {
-            object value = property.GetValue(instance);
-
             try
             {
-                var test1 = ((dynamic) value).Primary;
-                var test2 = ((dynamic) value).Secondary;
+                var layoutElement = xml.Element("KeyboardLayout");
+                return layoutElement != null ? layoutElement.Value : "en-US";
             }
-            catch
+            catch (Exception ex)
             {
-                // Is not applicable, skip
-                return default;
+                log.LogWarning(ex, "Could not get layout from keybindings");
+                throw;
             }
-
-            KeyBindings.PrimaryBinding primary = ((dynamic) value).Primary;
-            KeyBindings.SecondaryBinding secondary = ((dynamic) value).Secondary;
-
-            if (string.IsNullOrWhiteSpace(primary.Key) && string.IsNullOrWhiteSpace(secondary.Key))
-            {
-                // Not in use, skip
-                return default;
-            }
-
-            string key = primary.Key;
-            KeyBindings.ModifierBinding modifier = primary.Modifier;
-
-            if (primary.Device != "Keyboard")
-            {
-                if (secondary.Device == "Keyboard")
-                {
-                    key = secondary.Key;
-                    modifier = secondary.Modifier;
-                }
-                else
-                {
-                    // No keyboard bindings, skip
-                    return default;
-                }
-            }
-
-            string mod = modifier != null ? modifier.Key : "";
-            string name = formats.Bindings.ToVariable(property.Name);
-            string keyValue = GetKeyBinding(key, mod, layout);
-
-            return new Variable(name, keyValue);
         }
 
-        private string GetKeyBinding(string key, string mod, IDictionary<string, string> layout)
+        public IDictionary<string, string> GetMapping(string layout)
         {
-            key = GetKey(key, layout);
-            mod = GetKey(mod, layout);
+            try
+            {
+                string mappingFile = Path.Combine(paths.MappingsDirectory.FullName, $"{layout}.yml");
 
-            return mod + key;
+                if (!File.Exists(mappingFile))
+                {
+                    if (layout != "en-GB")
+                    {
+                        log.LogWarning(
+                            "Unsupported keybindings layout, could not find the {Layout}.yml mapping, defaulting to en-GB.yml",
+                            layout);
+                        return GetMapping("en-GB");
+                    }
+
+                    log.LogError("Could not set keybindings, no mappings found");
+                    return new Dictionary<string, string>();
+                }
+
+                log.LogDebug("Reading '{MappingPath}'", mappingFile);
+
+                var entries = File.ReadAllLines(mappingFile)
+                    .Where(x => !string.IsNullOrWhiteSpace(x) && x.Contains(":"));
+                return entries.ToDictionary(entry => entry.Split(':')[0].Trim(), entry => entry.Split(':')[1].Trim());
+            }
+            catch (Exception ex)
+            {
+                log.LogWarning(ex, "Could not get mappings from {Layout},yml", layout);
+                throw;
+            }
         }
 
-        private string GetKey(string key, IDictionary<string, string> layout)
+        public IEnumerable<Variable> GetVariables(XElement xml, IDictionary<string, string> mapping)
         {
-            if (string.IsNullOrWhiteSpace(key)) { return key; }
+            IList<Variable> variables = new List<Variable>();
+
+            foreach (var bindingNode in xml.Elements().Where(i => i.Elements().Any()))
+            {
+                try
+                {
+                    var name = bindingNode.Name.LocalName;
+
+                    var primary = bindingNode.Element("Primary");
+                    var secondary = bindingNode.Element("Secondary");
+
+                    if (primary == null)
+                    {
+                        log.LogDebug("Skipping {Name}, no bindings set", name);
+                        continue;
+                    }
+
+                    XElement active = null;
+
+                    if (IsApplicableBinding(primary))
+                    {
+                        active = primary;
+                    }
+                    else if (IsApplicableBinding(secondary))
+                    {
+                        active = secondary;
+                    }
+                    else
+                    {
+                        log.LogDebug("Skipping {Name}, not applicable", name);
+                        continue;
+                    }
+
+                    if (active == null) continue;
+
+                    var modifiers = active.Elements("Modifier").ToList();
+
+                    if (modifiers.Any(x => !IsApplicableBinding(x)))
+                    {
+                        log.LogDebug("Skipping {Name}, modifier not applicable", name);
+                    }
+
+                    string value = GetKeyBinding(active.Attribute("Key").Value, modifiers.Select(x => x.Attribute("Key").Value), mapping);
+
+                    variables.Add(new Variable(name, value));
+                }
+                catch (Exception ex)
+                {
+                    log.LogWarning(ex, "Could not process {Name} keybinding", bindingNode.Name);
+                }
+            }
+
+            return variables;
+        }
+
+        private string GetKeyBinding(string key, IEnumerable<string> mods, IDictionary<string, string> mapping)
+        {
+            return string.Join("", mods.Select(mod => GetKey(mod, mapping))) + GetKey(key, mapping);
+        }
+
+        private string GetKey(string key, IDictionary<string, string> mapping)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return key;
+            }
 
             key = key.Replace("Key_", "");
 
-            key = layout.ContainsKey(key) ? layout[key] : "";
+            if (!mapping.ContainsKey(key))
+            {
+                log.LogDebug("The '{Key}' key is not assigned in the mappings file", key);
+                return "";
+            }
 
-            return $"[{key}]";
+            return $"[{mapping[key]}]";
+        }
+
+        private bool IsApplicableBinding(XElement xml)
+        {
+            var deviceNode = xml.Attribute("Device");
+            var keyNode = xml.Attribute("Key");
+
+            return deviceNode != null && deviceNode.Value == "Keyboard" && keyNode != null &&
+                   keyNode.Value.StartsWith("Key_");
         }
     }
 }
