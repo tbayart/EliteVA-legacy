@@ -39,7 +39,7 @@
           <Private>True</Private>
         </Reference>
         <Reference Include="EliteAPI, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\packages\EliteAPI.3.0.0-alpha1134\lib\netstandard2.0\EliteAPI.dll</HintPath>
+          <HintPath>..\packages\EliteAPI.3.0.0-alpha1158\lib\netstandard2.0\EliteAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="FluentAssertions, Version=5.10.3.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">
@@ -381,7 +381,11 @@
     <ItemGroup>
       <None Include="packages.config" />
     </ItemGroup>
+    
     <ItemGroup>
+      <Content Include="EliteVA.ini">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="Mappings\en-GB.yml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
