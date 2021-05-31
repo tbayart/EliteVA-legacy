@@ -45,10 +45,13 @@ namespace EliteVA.Services.Variable
                 foreach (var variable in variables)
                 {
                     SetVariable(category, variable);
-                }   
+                }
+
+                var variablesPath = Path.Combine(paths.PluginDirectory.FullName, "Variables");
+                Directory.CreateDirectory(variablesPath);
                 
                 var setVariables = proxy.GetProxy().Variables.SetVariables.GroupBy(x => x.Key.category).ToList();
-                setVariables.ForEach(x =>  File.WriteAllLines(Path.Combine(paths.PluginDirectory.FullName, x.Key + ".txt"), x.Select(y=> y.Key.name + ": " + y.Value)));
+                setVariables.ForEach(x =>  File.WriteAllLines(Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y=> y.Key.name + ": " + y.Value)));
             }
             catch (Exception ex)
             {

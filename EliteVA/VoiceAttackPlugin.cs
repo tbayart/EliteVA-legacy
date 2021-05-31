@@ -7,11 +7,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Autotrade.EDDB;
 using EliteAPI;
 using EliteAPI.Abstractions;
 using EliteAPI.Options.Bindings;
-
+using EliteAPI.Spansh;
+using EliteAPI.Spansh.NeutronPlotter.Abstractions;
 using EliteVA.Bindings;
 using EliteVA.Bindings.Abstractions;
 using EliteVA.Constants.Formatting.Abstractions;
@@ -30,7 +32,9 @@ using EliteVA.Support;
 using EliteVA.Support.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -45,6 +49,7 @@ namespace EliteVA
 
     public class VoiceAttackPlugin
     {
+        private static INeutronPlotter _neutronPlotter;
         private static IHost Host { get; set; }
         private static IProxy Proxy { get; set; }
         
@@ -83,53 +88,20 @@ namespace EliteVA
 
         public static void VA_Invoke1(dynamic vaProxy)
         {
-            // try
-            // {
-            //     var proxy = Proxy.SetProxy(vaProxy);
-            //
-            //     if (proxy.Context.ToLower() == "eddb.route")
-            //     {
-            //         var starSystem = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.StarSystem");
-            //         var startStation = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.StartStation");
-            //         var maxHopDistance = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.MaxHopDistance");
-            //         var hopCount = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.HopCount");
-            //         var cargoCapacity = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.CargoCapacity");
-            //         var availableCredits = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.AvailableCredits");
-            //         var pad = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.Pad");
-            //         var maxDistance = proxy.Variables.Get<int>("EliteAPI.EDDB.Request.MaxDistance");
-            //         var planetary = proxy.Variables.Get<bool>("EliteAPI.EDDB.Request.Planetary");
-            //
-            //         var hopsRequest = new HopsRequest(starSystem, startStation, maxHopDistance, hopCount, cargoCapacity, availableCredits, pad, maxDistance, planetary);
-            //         var content = JsonConvert.SerializeObject(hopsRequest);
-            //         var result = Client.PostAsync("https://eddb.io/route/search/hops",
-            //             new StringContent(content, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
-            //         result.EnsureSuccessStatusCode();
-            //         var response =
-            //             JsonConvert.DeserializeObject<JObject>(result.Content.ReadAsStringAsync().GetAwaiter()
-            //                 .GetResult());
-            //         
-            //         Variables.SetVariables(Variables.GetPaths(response).Select(x => new Variable($"EliteAPI.EDDB.Response.{x.Name}", x.Value)));
-            //     }
-            //
-            //     else if (proxy.Context.ToLower() == "eddb.system")
-            //     {
-            //         string name = proxy.Variables.Get<string>("EliteAPI.EDDB.Request.Name");
-            //
-            //         var request = new HttpRequestMessage(HttpMethod.Get, "https://eddb.io/system/search?system%5Bname%5D=" + name);
-            //         var result = Client.SendAsync(request).GetAwaiter().GetResult();
-            //         
-            //         result.EnsureSuccessStatusCode();
-            //         var response =
-            //             JsonConvert.DeserializeObject<JArray>(result.Content.ReadAsStringAsync().GetAwaiter()
-            //                 .GetResult());
-            //         
-            //         Variables.SetVariables(Variables.GetPaths(response).Select(x => new Variable($"EliteAPI.EDDB.Response.{x.Name}", x.Value)));
-            //     }
-            // }
-            // catch (Exception ex)
-            // {
-            //     Log.LogWarning(ex, "Could not execute function");
-            // }
+            Proxy.SetProxy(vaProxy);
+
+            var proxy = Proxy.GetProxy();
+            
+            if (proxy.Context == "Spansh.NeutronPlotter")
+            {
+                string sourceSystem = proxy.Variables.Get<string>("EliteAPI.Spansh.NeutronPlotter.SourceSystem");
+                string targetSystem = proxy.Variables.Get<string>("EliteAPI.Spansh.NeutronPlotter.TargetSystem");
+                int efficiency = proxy.Variables.Get<int>("EliteAPI.Spansh.NeutronPlotter.Efficiency");
+                int range = proxy.Variables.Get<int>("EliteAPI.Spansh.NeutronPlotter.Range");
+
+                var result = _neutronPlotter.Plot(sourceSystem, targetSystem, range, efficiency).GetAwaiter().GetResult().Result;
+                Variables.SetVariables("ThirdParty.Spansh", Variables.GetPaths(JObject.FromObject(result, new JsonSerializer { ContractResolver = new LongNameContractResolver()})).Select(x => new Variable($"EliteAPI.Spansh.NeutronPlotter.{x.Name}", x.Value)));
+            }
         }
 
         private static void Initialize(dynamic vaProxy)
@@ -152,8 +124,12 @@ namespace EliteVA
 
                     services.AddSingleton<ICommandService, CommandService>();
                     services.AddSingleton<IVariableService, VariableService>();
-                    
+
                     services.AddEliteAPI();
+                    services.AddSpansh();
+                    
+                    // Remove annoying HttpClient messages
+                    services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
                 })
                 .ConfigureLogging((context, log) =>
                 {
@@ -173,6 +149,8 @@ namespace EliteVA
             Client = new HttpClient();
 
             var api = Host.Services.GetRequiredService<IEliteDangerousApi>();
+
+            _neutronPlotter = Host.Services.GetRequiredService<INeutronPlotter>();
 
             var events = Host.Services.GetRequiredService<IEventProcessor>();
             var status = Host.Services.GetRequiredService<IStatusProcessor>();

@@ -9,7 +9,7 @@
     <Version>3.0.0-alpha1132</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.0.0-alpha1158" />
+    <PackageReference Include="EliteAPI" Version="3.0.0-alpha1173" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />

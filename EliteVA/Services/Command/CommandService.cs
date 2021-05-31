@@ -41,7 +41,10 @@ namespace EliteVA.Services
                 log.LogDebug("Skipping '{Command}' because it has not been subscribed to", command);
             }
             
-            File.WriteAllLines(Path.Combine(paths.PluginDirectory.FullName, "InvokedCommands.txt"), invokedCommands.Select(x=> $"{x.timestamp.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)} {x.name}"));
+            var commandsPath = Path.Combine(paths.PluginDirectory.FullName, "Commands");
+            Directory.CreateDirectory(commandsPath);
+
+            File.WriteAllLines(Path.Combine(commandsPath, "InvokedCommands.txt"), invokedCommands.Select(x=> $"{x.timestamp.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)} {x.name}"));
         }
     }
 }

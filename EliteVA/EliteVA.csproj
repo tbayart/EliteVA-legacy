@@ -39,7 +39,11 @@
           <Private>True</Private>
         </Reference>
         <Reference Include="EliteAPI, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\packages\EliteAPI.3.0.0-alpha1158\lib\netstandard2.0\EliteAPI.dll</HintPath>
+          <HintPath>..\packages\EliteAPI.3.0.0-alpha1173\lib\netstandard2.0\EliteAPI.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="EliteAPI.Spansh, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\packages\EliteAPI.Spansh.3.0.0-alpha1173\lib\netstandard2.0\EliteAPI.Spansh.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="FluentAssertions, Version=5.10.3.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">
@@ -117,6 +121,10 @@
         </Reference>
         <Reference Include="Microsoft.Extensions.Hosting.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
           <HintPath>..\packages\Microsoft.Extensions.Hosting.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Http, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+          <HintPath>..\packages\Microsoft.Extensions.Http.5.0.0\lib\net461\Microsoft.Extensions.Http.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.Extensions.Logging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
@@ -362,6 +370,7 @@
         <Compile Include="Constants\Paths\Paths.cs" />
         <Compile Include="Constants\Proxy\Abstractions\IProxy.cs" />
         <Compile Include="Constants\Proxy\Proxy.cs" />
+        <Compile Include="LongNameContractResolver.cs" />
         <Compile Include="EDDB\HopsRequest.cs" />
         <Compile Include="EDDB\HopsResponse.cs" />
         <Compile Include="Event\Abstractions\IEventProcessor.cs" />
