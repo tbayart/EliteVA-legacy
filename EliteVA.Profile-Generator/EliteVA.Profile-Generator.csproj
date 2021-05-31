@@ -5,8 +5,8 @@
     <RootNamespace>EliteVA.ProfileGenerator</RootNamespace>
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>3.0.0.0</FileVersion>
-    <InformationalVersion>3.0.0-alpha.1132+Branch.dev.Sha.7eea355595fa257bf3f73265b01b87975921e8a8</InformationalVersion>
-    <Version>3.0.0-alpha1132</Version>
+    <InformationalVersion>3.0.0-alpha.1135+Branch.dev.Sha.66e52937c6084ecb2dba2fba744a0d3f33c1a04b</InformationalVersion>
+    <Version>3.0.0-alpha1135</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EliteAPI" Version="3.0.0-alpha1173" />
