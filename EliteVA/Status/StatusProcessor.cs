@@ -85,6 +85,12 @@ namespace EliteVA.Status
             api.Commander.Hot.OnChange += (sender, e) => SetVariablesAndInvoke("Hot", e);
             api.Commander.VeryCold.OnChange += (sender, e) => SetVariablesAndInvoke("VeryCold", e);
             api.Commander.VeryHot.OnChange += (sender, e) => SetVariablesAndInvoke("VeryHot", e);
+            api.Commander.Oxygen.OnChange += (sender, e) => SetVariablesAndInvoke("Oxygen", e);
+            api.Commander.Health.OnChange += (sender, e) => SetVariablesAndInvoke("Health", e);
+            api.Commander.Temperature.OnChange += (sender, e) => SetVariablesAndInvoke("Temperature", e);
+            api.Commander.SelectedWeapon.OnChange += (sender, e) => SetVariablesAndInvoke("SelectedWeapon", e);
+            api.Commander.SelectedWeaponLocalised.OnChange += (sender, e) => SetVariablesAndInvoke("SelectedWeaponLocalised", e);
+            api.Commander.Gravity.OnChange += (sender, e) => SetVariablesAndInvoke("Gravity", e);
         }
 
         /// <inheritdoc />
