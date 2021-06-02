@@ -3,8 +3,8 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>3.0.0.0</FileVersion>
-    <InformationalVersion>3.0.0-alpha.1138+Branch.dev.Sha.428e112ac626a353f9a9b8cdf66d51bdb33b2968</InformationalVersion>
-    <Version>3.0.0-alpha1138</Version>
+    <InformationalVersion>3.0.0-alpha.1141+Branch.dev.Sha.ab1170a76a31dd7944146fb02ddb6dcf4acb2d9b</InformationalVersion>
+    <Version>3.0.0-alpha1141</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EliteAPI" Version="3.0.0-alpha1173" />
