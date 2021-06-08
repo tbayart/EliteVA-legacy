@@ -10,6 +10,8 @@ namespace EliteVA.Constants.Formatting
         public StatusFormat Status => new StatusFormat();
         
         public BindingFormat Bindings => new BindingFormat();
+
+        public SupportFormat Support => new SupportFormat();
     }
 
 }

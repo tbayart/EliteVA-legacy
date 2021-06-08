@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+using System.Xml.Linq;
 using EliteAPI.Options.Bindings.Models;
 
 namespace EliteVA.Bindings.Abstractions
@@ -10,20 +10,27 @@ namespace EliteVA.Bindings.Abstractions
         /// Binds all the keybindings to VoiceAttack variables
         /// </summary>
         void Bind();
-        
+
         /// <summary>
-        /// Reads the layout for the specified keyboard layout
+        /// Gets the keyboard layout of a bindings xml
         /// </summary>
-        /// <param name="mappingsPath">The path to the mappings folder</param>
-        /// <param name="keyboardLayout">The name of the keyboard layout</param>
+        /// <param name="xml"></param>
         /// <returns></returns>
-        IDictionary<string, string> ReadLayout(string mappingsPath, string keyboardLayout);
+        string GetLayout(XElement xml);
         
         /// <summary>
-        /// Gets all the variables for a specific keyboard layout
+        /// Gets the mappings from the configuration direction
         /// </summary>
         /// <param name="layout"></param>
         /// <returns></returns>
-        IEnumerable<Variable> GetVariables(KeyBindings bindings, IDictionary<string, string> layout);
+        IDictionary<string, string> GetMapping(string layout);
+        
+        /// <summary>
+        /// Generates the variables needed
+        /// </summary>
+        /// <param name="xml"></param>
+        /// <param name="mapping"></param>
+        /// <returns></returns>
+        IEnumerable<Variable> GetVariables(XElement xml, IDictionary<string, string> mapping);
     }
 }

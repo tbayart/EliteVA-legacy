@@ -1,4 +1,5 @@
 using Somfic.VoiceAttack.Proxy.Abstractions;
+using IVoiceAttackProxy = EliteVA.VoiceAttackProxy.Abstractions.IVoiceAttackProxy;
 
 namespace EliteVA.Constants.Proxy.Abstractions
 {

@@ -18,5 +18,10 @@ namespace EliteVA.Constants.Formatting.Abstractions
         /// Formats for bindings
         /// </summary>
         BindingFormat Bindings { get; }
+        
+        /// <summary>
+        /// Formats for support
+        /// </summary>
+        SupportFormat Support { get; }
     }
 }
