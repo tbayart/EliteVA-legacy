@@ -1,21 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <PackageReference Include="EliteAPI" Version="3.0.0-alpha1173" />
-      <PackageReference Include="EliteAPI.Spansh" Version="3.0.0-alpha1173" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="5.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-      <PackageReference Include="Valsom.Logging.File" Version="0.1.0-alpha0056" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="Mappings\en-GB.yml" />
-      <Content Include="Mappings\en-US.yml" />
-    </ItemGroup>
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
+    <InformationalVersion>3.0.0-alpha.1146+Branch.dev.Sha.3e1db448dea6ec4ca3e31c45fad83cc480f5158d</InformationalVersion>
+    <Version>3.0.0-alpha1146</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="EliteAPI" Version="3.0.0-alpha1173" />
+    <PackageReference Include="EliteAPI.Spansh" Version="3.0.0-alpha1173" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+    <PackageReference Include="Valsom.Logging.File" Version="0.1.0-alpha0056" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Mappings\en-GB.yml" />
+    <Content Include="Mappings\en-US.yml" />
+  </ItemGroup>
 </Project>
