@@ -38,6 +38,7 @@ namespace EliteVA.ProfileGenerator
                 })
                 .ConfigureServices((context, service) =>
                 {
+                    service.AddSingleton<IFormatting, Formats.Formatting>();
                     service.AddEliteAPI();
                 })
                 .Build();
@@ -64,7 +65,7 @@ namespace EliteVA.ProfileGenerator
 
         public async Task Run()
         {
-            Assembly eaAssembly = Assembly.GetAssembly(typeof(IEliteDangerousApi));
+            var eaAssembly = Assembly.GetAssembly(typeof(IEliteDangerousApi));
 
             if (eaAssembly == null)
             {
@@ -72,12 +73,12 @@ namespace EliteVA.ProfileGenerator
                 return;
             }
 
-            List<Type> eventTypes = eaAssembly.GetTypes().Where(x => typeof(IEvent).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract && !x.IsInterface && !x.Name.StartsWith("Raw")).ToList();
-            List<PropertyInfo> shipVars = typeof(IShip).GetProperties().ToList();
+            var eventTypes = eaAssembly.GetTypes().Where(x => typeof(IEvent).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract && !x.IsInterface && !x.Name.StartsWith("Raw")).ToList();
+            var shipVars = typeof(IShip).GetProperties().ToList();
             shipVars.AddRange(typeof(ICommander).GetProperties().ToList());
             shipVars = shipVars.Where(x => !x.Name.Contains("Flags")).ToList();
 
-            List<Type> shipEvents = eaAssembly.GetTypes().Where(x => typeof(IStatus).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract && !x.IsInterface).ToList();
+            var shipEvents = eaAssembly.GetTypes().Where(x => typeof(IStatus).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract && !x.IsInterface).ToList();
 
             if (!shipVars.Any()) { _log.LogWarning("No ship events could be found"); }
             else { _log.LogInformation("Found {amount} ship events", shipVars.Count); }
@@ -88,7 +89,7 @@ namespace EliteVA.ProfileGenerator
             if (!eventTypes.Any()) { _log.LogWarning("No game events could be found"); }
             else { _log.LogInformation("Found {amount} game events", eventTypes.Count); }
             
-            Profile profile = new Profile();
+            var profile = new Profile();
             shipVars.ForEach(x =>
             {
                 string name = format.Status.ToCommand(x.Name);

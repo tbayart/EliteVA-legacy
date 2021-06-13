@@ -2,7 +2,7 @@
 
 namespace EliteVA.Formats
 {
-    public class Format : IFormatting
+    public class Formatting : IFormatting
     {
         public IFormat Events => new EventFormat();
         public IFormat Status => new StatusFormat();
