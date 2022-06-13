@@ -1,0 +1,130 @@
+# Function keys row
+Escape: 27
+F1: 112
+F2: 113
+F3: 114
+F4: 115
+F5: 116
+F6: 117
+F7: 118
+F8: 119
+F9: 120
+F10: 121
+F11: 122
+F12: 123
+F13: 124
+F14: 125
+F15: 126
+F16: 127
+F17: 128
+F18: 129
+F19: 130
+F20: 131
+F21: 132
+F22: 133
+F23: 134
+F24: 135
+
+# First row
+SuperscriptTwo: 222
+Ampersand: 49
+é: 50
+DoubleQuote: 51
+Apostrophe: 52
+LeftParenthesis: 53
+Minus: 54
+è: 55
+Underline: 56
+ç: 57
+à: 48
+RightParenthesis: 219
+Equals: 187
+Backspace: 8
+
+# Second row
+Tab: 9
+A: 65
+Z: 90
+E: 69
+R: 82
+T: 84
+Y: 89
+U: 85
+I: 73
+O: 79
+P: 80
+Circumflex: 221
+Dollar: 186
+Enter: 13
+
+#Third row
+CapsLock: 20
+Q: 81
+S: 83
+D: 68
+F: 70
+G: 71
+H: 72
+J: 74
+K: 75
+L: 76
+M: 77
+ù: 192
+*: 220
+
+# Fourth row
+LeftShift: 160
+LessThan: 226
+W: 87
+X: 88
+C: 67
+V: 86
+B: 66
+N: 78
+Comma: 188
+SemiColon: 190
+Colon: 191
+ExclamationPoint: 223
+RightShift: 161
+
+# Fifth and last rown
+LeftControl: 222
+LeftAlt: 192
+Space: 32
+RightAlt: 219
+Apps: 93
+RightControl: 163
+
+# Special keys and arrows
+SYSRQ: 44
+ScrollLock: 145
+Pause: 19
+Insert: 45
+Home: 36
+PageUp: 33
+Delete: 46
+End: 35
+PageDown: 34
+UpArrow: 38
+LeftArrow: 37
+DownArrow: 40
+RightArrow: 39
+
+# Numpad keys
+NumLock: 144
+Numpad_Divide: 111
+Numpad_Multiply: 106
+Numpad_Subtract: 109
+Numpad_7: 103
+Numpad_8: 104
+Numpad_9: 105
+Numpad_Add: 107
+Numpad_4: 100
+Numpad_5: 101
+Numpad_6: 102
+Numpad_1: 97
+Numpad_2: 98
+Numpad_3: 99
+Numpad_Enter: 156
+Numpad_0: 96
+Numpad_Decimal: 110
