@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EliteVA.VoiceAttackProxy.Audio;
+﻿using EliteVA.VoiceAttackProxy.Audio;
 using EliteVA.VoiceAttackProxy.Commands;
 using EliteVA.VoiceAttackProxy.Log;
 using EliteVA.VoiceAttackProxy.Options;
 using EliteVA.VoiceAttackProxy.Paths;
 using EliteVA.VoiceAttackProxy.Variables;
 using EliteVA.VoiceAttackProxy.Versions;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EliteVA.VoiceAttackProxy.Abstractions
 {
