@@ -1,6 +1,6 @@
 using System;
 
-namespace EliteVA
+namespace EliteVA.VoiceAttackProxy.Variables
 {
     public class Variable
     {

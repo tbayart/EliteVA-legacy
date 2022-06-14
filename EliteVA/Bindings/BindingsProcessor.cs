@@ -3,6 +3,7 @@ using EliteVA.Bindings.Abstractions;
 using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.Constants.Paths.Abstractions;
 using EliteVA.Services;
+using EliteVA.VoiceAttackProxy.Variables;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

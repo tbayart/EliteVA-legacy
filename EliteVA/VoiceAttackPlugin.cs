@@ -16,6 +16,7 @@ using EliteVA.Status;
 using EliteVA.Status.Abstractions;
 using EliteVA.Support;
 using EliteVA.Support.Abstractions;
+using EliteVA.VoiceAttackProxy.Variables;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -2,6 +2,7 @@ using EliteAPI.Abstractions;
 using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.Services;
 using EliteVA.Status.Abstractions;
+using EliteVA.VoiceAttackProxy.Variables;
 using System;
 using System.Collections.Generic;
 using System.Linq;

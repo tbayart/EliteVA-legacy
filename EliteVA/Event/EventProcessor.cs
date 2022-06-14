@@ -4,6 +4,7 @@ using EliteAPI.Event.Models.Abstractions;
 using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.Event.Abstractions;
 using EliteVA.Services;
+using EliteVA.VoiceAttackProxy.Variables;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

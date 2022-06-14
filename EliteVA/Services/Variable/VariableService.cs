@@ -1,5 +1,6 @@
 using EliteVA.Constants.Paths.Abstractions;
 using EliteVA.Constants.Proxy.Abstractions;
+using EliteVA.VoiceAttackProxy.Variables;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
@@ -23,7 +24,7 @@ namespace EliteVA.Services
         }
 
         /// <inheritdoc />
-        public void SetVariable(string category, EliteVA.Variable variable)
+        public void SetVariable(string category, Variable variable)
         {
             try
             {
@@ -36,7 +37,7 @@ namespace EliteVA.Services
         }
 
         /// <inheritdoc />
-        public void SetVariables(string category, IEnumerable<EliteVA.Variable> variablesEnumerable)
+        public void SetVariables(string category, IEnumerable<Variable> variablesEnumerable)
         {
             try
             {
@@ -58,7 +59,7 @@ namespace EliteVA.Services
             }
         }
 
-        public List<EliteVA.Variable> GetPaths(JObject jObject)
+        public List<Variable> GetPaths(JObject jObject)
         {
             try
             {
@@ -67,11 +68,11 @@ namespace EliteVA.Services
             catch (Exception ex)
             {
                 logger.LogWarning(ex, "Cannot get event variable paths (object)");
-                return new List<EliteVA.Variable>();
+                return new List<Variable>();
             }
         }
 
-        public List<EliteVA.Variable> GetPaths(JArray jArray)
+        public List<Variable> GetPaths(JArray jArray)
         {
             try
             {
@@ -80,11 +81,11 @@ namespace EliteVA.Services
             catch (Exception ex)
             {
                 logger.LogWarning(ex, "Cannot get event variable paths (array)");
-                return new List<EliteVA.Variable>();
+                return new List<Variable>();
             }
         }
 
-        private List<EliteVA.Variable> GetPaths(JProperty property)
+        private List<Variable> GetPaths(JProperty property)
         {
             try
             {
@@ -97,46 +98,46 @@ namespace EliteVA.Services
                         return property.Value.Values<JObject>().SelectMany(GetPaths).ToList();
 
                     case JTokenType.Boolean:
-                        return new List<EliteVA.Variable>
-                            {new EliteVA.Variable(property.Value.Path, property.Value.ToObject<bool>())};
+                        return new List<Variable>
+                            {new Variable(property.Value.Path, property.Value.ToObject<bool>())};
 
                     case JTokenType.String:
-                        return new List<EliteVA.Variable>
-                            {new EliteVA.Variable(property.Value.Path, property.Value.ToObject<string>())};
+                        return new List<Variable>
+                            {new Variable(property.Value.Path, property.Value.ToObject<string>())};
 
                     case JTokenType.Date:
-                        return new List<EliteVA.Variable>
-                            {new EliteVA.Variable(property.Value.Path, property.Value.ToObject<DateTime>())};
+                        return new List<Variable>
+                            {new Variable(property.Value.Path, property.Value.ToObject<DateTime>())};
 
                     case JTokenType.Integer:
                         try
                         {
-                            return new List<EliteVA.Variable>
-                                {new EliteVA.Variable(property.Value.Path, property.Value.ToObject<int>())};
+                            return new List<Variable>
+                                {new Variable(property.Value.Path, property.Value.ToObject<int>())};
                         }
                         catch (OverflowException)
                         {
-                            return new List<EliteVA.Variable>
-                                {new EliteVA.Variable(property.Value.Path, property.Value.ToObject<long>())};
+                            return new List<Variable>
+                                {new Variable(property.Value.Path, property.Value.ToObject<long>())};
                         }
 
                     case JTokenType.Float:
-                        return new List<EliteVA.Variable>
-                            {new EliteVA.Variable(property.Value.Path, property.Value.ToObject<decimal>())};
+                        return new List<Variable>
+                            {new Variable(property.Value.Path, property.Value.ToObject<decimal>())};
 
                     default:
-                        return new List<EliteVA.Variable>();
+                        return new List<Variable>();
                 }
             }
             catch (InvalidCastException ex)
             {
                 logger.LogDebug(ex, "Could not process {Path}", property.Value.Path);
-                return new List<EliteVA.Variable>();
+                return new List<Variable>();
             }
             catch (Exception ex)
             {
                 logger.LogWarning(ex, "Could not process {Path}", property.Value.Path);
-                return new List<EliteVA.Variable>();
+                return new List<Variable>();
             }
         }
     }

@@ -1,4 +1,5 @@
 using EliteAPI.Event.Models.Abstractions;
+using EliteVA.VoiceAttackProxy.Variables;
 using System.Collections.Generic;
 
 namespace EliteVA.Event.Abstractions

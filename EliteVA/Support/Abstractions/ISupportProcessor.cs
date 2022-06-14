@@ -1,3 +1,4 @@
+using EliteVA.VoiceAttackProxy.Variables;
 using System.Collections.Generic;
 
 namespace EliteVA.Support.Abstractions
