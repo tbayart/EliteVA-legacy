@@ -1,18 +1,15 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
 using EliteAPI.Abstractions;
 using EliteAPI.Event.Models;
 using EliteAPI.Event.Models.Abstractions;
 using EliteVA.Event;
 using EliteVA.Services;
-using EliteVA.Services.Variable;
-
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Text.Json;
 using Xunit;
 using Formatting = EliteVA.Constants.Formatting.Formatting;
 using IEventProcessor = EliteVA.Event.Abstractions.IEventProcessor;

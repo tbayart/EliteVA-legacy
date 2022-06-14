@@ -1,18 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
-
 using EliteAPI.Abstractions;
-
 using EliteVA.Constants.Formatting;
 using EliteVA.Services;
-using EliteVA.Services.Variable;
 using EliteVA.Status;
 using EliteVA.Status.Abstractions;
-
 using FluentAssertions;
-
 using Moq;
-
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace EliteVA.Tests
