@@ -1,13 +1,10 @@
+using EliteAPI.Abstractions;
+using EliteVA.Constants.Formatting.Abstractions;
+using EliteVA.Services;
+using EliteVA.Status.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using EliteAPI.Abstractions;
-
-using EliteVA.Constants.Formatting.Abstractions;
-using EliteVA.Services;
-using EliteVA.Services.Variable;
-using EliteVA.Status.Abstractions;
 
 namespace EliteVA.Status
 {

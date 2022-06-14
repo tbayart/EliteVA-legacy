@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using EliteVA.Constants.Paths.Abstractions;
 using EliteVA.Constants.Proxy.Abstractions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
-namespace EliteVA.Services.Variable
+namespace EliteVA.Services
 {
     public class VariableService : IVariableService
     {

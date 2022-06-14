@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
-namespace EliteVA.Services.Variable
+namespace EliteVA.Services
 {
     public interface IVariableService
     {

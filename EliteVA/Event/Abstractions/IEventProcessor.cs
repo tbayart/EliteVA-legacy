@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-
 using EliteAPI.Event.Models.Abstractions;
+using System.Collections.Generic;
 
 namespace EliteVA.Event.Abstractions
 {

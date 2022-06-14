@@ -1,11 +1,11 @@
+using EliteVA.Constants.Paths.Abstractions;
+using EliteVA.Constants.Proxy.Abstractions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using EliteVA.Constants.Paths.Abstractions;
-using EliteVA.Constants.Proxy.Abstractions;
-using Microsoft.Extensions.Logging;
 
 namespace EliteVA.Services
 {

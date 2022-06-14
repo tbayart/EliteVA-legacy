@@ -1,21 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Xml;
-using System.Xml.Linq;
-using EliteAPI.Abstractions;
-using EliteAPI.Event.Models.Abstractions;
-using EliteAPI.Options.Bindings.Models;
 using EliteAPI.Options.Processor.Abstractions;
 using EliteVA.Bindings.Abstractions;
 using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.Constants.Paths.Abstractions;
 using EliteVA.Services;
-using EliteVA.Services.Variable;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace EliteVA.Bindings
 {

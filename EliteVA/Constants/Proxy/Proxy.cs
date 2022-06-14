@@ -1,6 +1,6 @@
-using System;
 using EliteVA.Constants.Proxy.Abstractions;
 using EliteVA.VoiceAttackProxy.Abstractions;
+using System;
 
 namespace EliteVA.Constants.Proxy
 {

@@ -1,8 +1,7 @@
+using EliteVA.Constants.Paths.Abstractions;
 using System;
 using System.IO;
 using System.Reflection;
-
-using EliteVA.Constants.Paths.Abstractions;
 
 namespace EliteVA.Constants.Paths
 {

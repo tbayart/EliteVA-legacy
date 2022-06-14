@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
-using EliteAPI.Options.Bindings.Models;
 
 namespace EliteVA.Bindings.Abstractions
 {

@@ -1,6 +1,3 @@
-using System.Runtime.Serialization;
-using EliteVA.Constants.Formatting.Abstractions;
-
 namespace EliteVA.Constants.Formatting.Formats
 {
     public class BindingFormat

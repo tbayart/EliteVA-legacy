@@ -1,22 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using EliteAPI.Abstractions;
 using EliteAPI.Event.Models;
 using EliteAPI.Event.Models.Abstractions;
-using EliteAPI.Event.Provider.Abstractions;
-using EliteAPI.Journal.Processor.Abstractions;
-using EliteAPI.Journal.Provider.Abstractions;
 using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.Event.Abstractions;
 using EliteVA.Services;
-using EliteVA.Services.Variable;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EliteVA.Event
 {

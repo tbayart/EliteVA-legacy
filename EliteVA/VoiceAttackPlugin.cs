@@ -1,17 +1,5 @@
-﻿using Somfic.Logging.VoiceAttack;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Autotrade.EDDB;
-using EliteAPI;
+﻿using EliteAPI;
 using EliteAPI.Abstractions;
-using EliteAPI.Options.Bindings;
 using EliteAPI.Spansh;
 using EliteAPI.Spansh.NeutronPlotter.Abstractions;
 using EliteVA.Bindings;
@@ -21,11 +9,9 @@ using EliteVA.Constants.Paths;
 using EliteVA.Constants.Paths.Abstractions;
 using EliteVA.Constants.Proxy;
 using EliteVA.Constants.Proxy.Abstractions;
-using EliteVA.EDDB;
 using EliteVA.Event;
 using EliteVA.Event.Abstractions;
 using EliteVA.Services;
-using EliteVA.Services.Variable;
 using EliteVA.Status;
 using EliteVA.Status.Abstractions;
 using EliteVA.Support;
@@ -38,9 +24,13 @@ using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Somfic.Logging.VoiceAttack;
+using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Reflection;
 using Valsom.Logging.File;
-using Valsom.Logging.File.Formats;
-
 using Formatting = EliteVA.Constants.Formatting.Formatting;
 
 

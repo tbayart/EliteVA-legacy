@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using EliteAPI.Abstractions;
+﻿using EliteAPI.Abstractions;
 using EliteAPI.Status.Processor.Abstractions;
 using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.Services;
-using EliteVA.Services.Variable;
 using EliteVA.Support.Abstractions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EliteVA.Support
 {
