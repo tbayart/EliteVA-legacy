@@ -23,6 +23,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\EliteVA.VoiceAttackProxy\EliteVA.VoiceAttackProxy.csproj" />
     <ProjectReference Include="..\..\EliteVA\EliteVA.csproj" />
   </ItemGroup>
 </Project>
