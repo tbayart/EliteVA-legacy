@@ -1,13 +1,15 @@
 ﻿using EliteAPI;
 using EliteAPI.Abstractions;
 using EliteAPI.Event.Models.Abstractions;
-
+using EliteAPI.Status.Abstractions;
+using EliteAPI.Status.Commander.Abstractions;
+using EliteAPI.Status.Ship.Abstractions;
+using EliteVA.Constants.Formatting;
+using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.ProfileGenerator.VoiceAttack;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,13 +17,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using EliteAPI.Status.Abstractions;
-using EliteAPI.Status.Commander.Abstractions;
-using EliteAPI.Status.Ship.Abstractions;
-
-using EliteVA.Constants.Formatting;
-using EliteVA.Constants.Formatting.Abstractions;
-
 using Valsom.Logging.PrettyConsole;
 using Valsom.Logging.PrettyConsole.Formats;
 using Valsom.Logging.PrettyConsole.Themes;

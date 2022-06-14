@@ -2,7 +2,7 @@
 
 namespace EliteVA.ProfileGenerator.VoiceAttack
 {
-	[System.SerializableAttribute()]
+    [System.SerializableAttribute()]
 	[System.ComponentModel.DesignerCategoryAttribute("code")]
 	[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
 	public class CommandAction
