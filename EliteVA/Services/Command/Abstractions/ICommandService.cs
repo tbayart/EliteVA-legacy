@@ -6,6 +6,6 @@ namespace EliteVA.Services
         /// Invokes a VoiceAttack command
         /// </summary>
         /// <param name="command">The name of the command</param>
-        void InvokeCommand(string command, bool skip = false);
+        void InvokeCommand(string command);
     }
 }

@@ -49,7 +49,7 @@ namespace EliteVA.Event
                     var command = GetCommand(e);
 
                     variables.SetVariables("Events", variable);
-                    commands.InvokeCommand(command, !api.HasCatchedUp);
+                    commands.InvokeCommand(command);
                 }
                 catch (Exception ex)
                 {
