@@ -21,11 +21,11 @@ namespace EliteVA.Services
         /// <summary>
         /// Gets all JToken's from a JObject
         /// </summary>
-        List<Variable> GetPaths(JObject jObject);
+        List<Variable> GetPaths(JObject jObject, string sourceEvent);
         
         /// <summary>
         /// Gets all JToken's from a JArray
         /// </summary>
-        List<Variable> GetPaths(JArray jArray);
+        List<Variable> GetPaths(JArray jArray, string sourceEvent);
     }
 }

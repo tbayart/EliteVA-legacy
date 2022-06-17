@@ -31,7 +31,7 @@ namespace EliteVA.Support
             this.variables = variables;
             this.commands = commands;
         }
-        
+
         public void Bind()
         {
             status.CargoUpdated += (sender, e) => SetVariablesAndInvoke("Status.Cargo", e.Cargo);
@@ -48,14 +48,14 @@ namespace EliteVA.Support
             try
             {
                 var jObject = JsonConvert.DeserializeObject<JObject>(JsonConvert.SerializeObject(value));
-                var vars = variables.GetPaths(jObject);
-                return vars.Select(x => new Variable(x.Name = formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
+                var vars = variables.GetPaths(jObject, string.Empty);
+                return vars.Select(x => new Variable(string.Empty, x.Name = formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
             }
             catch (JsonSerializationException ex)
             {
                 var jArray = JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(value));
-                var vars = variables.GetPaths(jArray);
-                return vars.Select(x => new Variable(x.Name = formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
+                var vars = variables.GetPaths(jArray, string.Empty);
+                return vars.Select(x => new Variable(string.Empty, x.Name = formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
             }
             catch (Exception ex)
             {

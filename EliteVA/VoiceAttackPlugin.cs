@@ -43,15 +43,15 @@ namespace EliteVA
         private static INeutronPlotter _neutronPlotter;
         private static IHost Host { get; set; }
         private static IProxy Proxy { get; set; }
-        
+
         private static IVariableService Variables { get; set; }
-        
+
         public static ILogger<VoiceAttackPlugin> Log { get; set; }
-        
+
         private static HttpClient Client { get; set; }
-        
+
         private static string PluginDir { get; set; }
-        
+
         public static Guid VA_Id() => new Guid("189a4e44-caf1-459b-b62e-fabc60a12986");
 
         public static string VA_DisplayName() => "EliteVA";
@@ -82,7 +82,7 @@ namespace EliteVA
             Proxy.SetProxy(vaProxy);
 
             var proxy = Proxy.GetProxy();
-            
+
             if (proxy.Context == "Spansh.NeutronPlotter")
             {
                 string sourceSystem = proxy.Variables.Get<string>("EliteAPI.Spansh.NeutronPlotter.SourceSystem");
@@ -91,7 +91,7 @@ namespace EliteVA
                 int range = proxy.Variables.Get<int>("EliteAPI.Spansh.NeutronPlotter.Range");
 
                 var result = _neutronPlotter.Plot(sourceSystem, targetSystem, range, efficiency).GetAwaiter().GetResult().Result;
-                Variables.SetVariables("ThirdParty.Spansh", Variables.GetPaths(JObject.FromObject(result, new JsonSerializer { ContractResolver = new LongNameContractResolver()})).Select(x => new Variable($"EliteAPI.Spansh.NeutronPlotter.{x.Name}", x.Value)));
+                Variables.SetVariables("ThirdParty.Spansh", Variables.GetPaths(JObject.FromObject(result, new JsonSerializer { ContractResolver = new LongNameContractResolver() }), string.Empty).Select(x => new Variable(string.Empty, $"EliteAPI.Spansh.NeutronPlotter.{x.Name}", x.Value)));
             }
         }
 
@@ -104,7 +104,7 @@ namespace EliteVA
                 .ConfigureServices((context, services) =>
                 {
                     services.AddSingleton<IProxy, Proxy>();
-                    
+
                     services.AddTransient<IFormatting, Formatting>();
                     services.AddTransient<IPaths, Paths>();
 
@@ -118,7 +118,7 @@ namespace EliteVA
 
                     services.AddEliteAPI();
                     services.AddSpansh();
-                    
+
                     // Remove annoying HttpClient messages
                     services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
                 })
@@ -152,7 +152,7 @@ namespace EliteVA
 
 
             api.InitializeAsync().GetAwaiter().GetResult();
-            
+
             events.Bind();
             status.Bind();
             support.Bind();

@@ -102,7 +102,7 @@ namespace EliteVA.Status
 
                 default:
                     string variableName = formats.Status.ToVariable(name);
-                    return new[] {new Variable(variableName, value)};
+                    return new[] { new Variable(string.Empty, variableName, value) };
             }
         }
 

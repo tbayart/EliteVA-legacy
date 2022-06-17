@@ -44,7 +44,7 @@ namespace EliteVA.Event
                     {
                         json = notImplemented.Json;
                     }
-                    
+
                     var variable = GetVariables(e.Event, json);
                     var command = GetCommand(e);
 
@@ -63,8 +63,8 @@ namespace EliteVA.Event
             try
             {
                 var jObject = JsonConvert.DeserializeObject<JObject>(json);
-                var vars = variables.GetPaths(jObject);
-                return vars.Select(x => new Variable(x.Name = formats.Events.ToVariable(eventName, x.Name), x.Value));
+                var vars = variables.GetPaths(jObject, string.Empty);
+                return vars.Select(x => new Variable(eventName, x.Name = formats.Events.ToVariable(eventName, x.Name), x.Value));
             }
             catch (Exception ex)
             {

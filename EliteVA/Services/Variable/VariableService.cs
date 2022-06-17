@@ -28,7 +28,7 @@ namespace EliteVA.Services
         {
             try
             {
-                proxy.GetProxy().Variables.Set(category, variable.Name, variable.Value); 
+                proxy.GetProxy().Variables.Set(category, variable.Name, variable.Value);
             }
             catch (Exception ex)
             {
@@ -49,9 +49,9 @@ namespace EliteVA.Services
 
                 var variablesPath = Path.Combine(paths.PluginDirectory.FullName, "Variables");
                 Directory.CreateDirectory(variablesPath);
-                
+
                 var setVariables = proxy.GetProxy().Variables.SetVariables.GroupBy(x => x.Key.category).ToList();
-                setVariables.ForEach(x =>  File.WriteAllLines(Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y=> y.Key.name + ": " + y.Value)));
+                setVariables.ForEach(x => File.WriteAllLines(Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y => y.Key.name + ": " + y.Value)));
             }
             catch (Exception ex)
             {
@@ -59,11 +59,11 @@ namespace EliteVA.Services
             }
         }
 
-        public List<Variable> GetPaths(JObject jObject)
+        public List<Variable> GetPaths(JObject jObject, string sourceEvent)
         {
             try
             {
-                return jObject.Properties().SelectMany(GetPaths).ToList();
+                return jObject.Properties().SelectMany(o => GetPaths(o, sourceEvent)).ToList();
             }
             catch (Exception ex)
             {
@@ -72,11 +72,11 @@ namespace EliteVA.Services
             }
         }
 
-        public List<Variable> GetPaths(JArray jArray)
+        public List<Variable> GetPaths(JArray jArray, string sourceEvent)
         {
             try
             {
-                return jArray.Values<JObject>().SelectMany(x => x.Properties().SelectMany(GetPaths)).ToList();
+                return jArray.Values<JObject>().SelectMany(x => x.Properties().SelectMany(o => GetPaths(o, sourceEvent))).ToList();
             }
             catch (Exception ex)
             {
@@ -85,45 +85,45 @@ namespace EliteVA.Services
             }
         }
 
-        private List<Variable> GetPaths(JProperty property)
+        private List<Variable> GetPaths(JProperty property, string sourceEvent)
         {
             try
             {
                 switch (property.Value.Type)
                 {
                     case JTokenType.Object:
-                        return property.Value.Children<JProperty>().SelectMany(GetPaths).ToList();
+                        return property.Value.Children<JProperty>().SelectMany(o => GetPaths(o, sourceEvent)).ToList();
 
                     case JTokenType.Array:
-                        return property.Value.Values<JObject>().SelectMany(GetPaths).ToList();
+                        return property.Value.Values<JObject>().SelectMany(o => GetPaths(o, sourceEvent)).ToList();
 
                     case JTokenType.Boolean:
                         return new List<Variable>
-                            {new Variable(property.Value.Path, property.Value.ToObject<bool>())};
+                            {new Variable(sourceEvent,property.Value.Path, property.Value.ToObject<bool>())};
 
                     case JTokenType.String:
                         return new List<Variable>
-                            {new Variable(property.Value.Path, property.Value.ToObject<string>())};
+                            {new Variable(sourceEvent,property.Value.Path, property.Value.ToObject<string>())};
 
                     case JTokenType.Date:
                         return new List<Variable>
-                            {new Variable(property.Value.Path, property.Value.ToObject<DateTime>())};
+                            {new Variable(sourceEvent,property.Value.Path, property.Value.ToObject<DateTime>())};
 
                     case JTokenType.Integer:
                         try
                         {
                             return new List<Variable>
-                                {new Variable(property.Value.Path, property.Value.ToObject<int>())};
+                                {new Variable(sourceEvent,property.Value.Path, property.Value.ToObject<int>())};
                         }
                         catch (OverflowException)
                         {
                             return new List<Variable>
-                                {new Variable(property.Value.Path, property.Value.ToObject<long>())};
+                                {new Variable(sourceEvent,property.Value.Path, property.Value.ToObject<long>())};
                         }
 
                     case JTokenType.Float:
                         return new List<Variable>
-                            {new Variable(property.Value.Path, property.Value.ToObject<decimal>())};
+                            {new Variable(sourceEvent,property.Value.Path, property.Value.ToObject<decimal>())};
 
                     default:
                         return new List<Variable>();

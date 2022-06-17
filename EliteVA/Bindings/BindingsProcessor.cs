@@ -147,7 +147,7 @@ namespace EliteVA.Bindings
 
                     string value = GetKeyBinding(active.Attribute("Key").Value, modifiers.Select(x => x.Attribute("Key").Value), mapping);
 
-                    variables.Add(new Variable($"EliteAPI.{name}", value));
+                    variables.Add(new Variable(string.Empty, $"EliteAPI.{name}", value));
                 }
                 catch (Exception ex)
                 {
