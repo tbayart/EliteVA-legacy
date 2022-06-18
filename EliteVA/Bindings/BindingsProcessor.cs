@@ -49,7 +49,7 @@ namespace EliteVA.Bindings
                 }
                 catch (Exception ex)
                 {
-                    log.LogWarning(ex, "Could not set keybindings");
+                    log.LogError(ex, "Could not set keybindings");
                 }
             };
         }
@@ -63,7 +63,7 @@ namespace EliteVA.Bindings
             }
             catch (Exception ex)
             {
-                log.LogWarning(ex, "Could not get layout from keybindings");
+                log.LogError(ex, "Could not get layout from keybindings");
                 throw;
             }
         }
@@ -96,7 +96,7 @@ namespace EliteVA.Bindings
             }
             catch (Exception ex)
             {
-                log.LogWarning(ex, "Could not get mappings from {Layout},yml", layout);
+                log.LogError(ex, "Could not get mappings from {Layout},yml", layout);
                 throw;
             }
         }
@@ -151,7 +151,7 @@ namespace EliteVA.Bindings
                 }
                 catch (Exception ex)
                 {
-                    log.LogWarning(ex, "Could not process {Name} keybinding", bindingNode.Name);
+                    log.LogError(ex, "Could not process {Name} keybinding", bindingNode.Name);
                 }
             }
 

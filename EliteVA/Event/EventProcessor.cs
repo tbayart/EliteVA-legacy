@@ -53,7 +53,7 @@ namespace EliteVA.Event
                 }
                 catch (Exception ex)
                 {
-                    log.LogWarning(ex, "Could not process {Event} event", e.Event);
+                    log.LogError(ex, "Could not process {Event} event", e.Event);
                 }
             };
         }
@@ -68,7 +68,7 @@ namespace EliteVA.Event
             }
             catch (Exception ex)
             {
-                log.LogWarning(ex, "Could not set variables for {Name} event", eventName);
+                log.LogError(ex, "Could not set variables for {Name} event", eventName);
                 return new List<Variable>();
             }
         }

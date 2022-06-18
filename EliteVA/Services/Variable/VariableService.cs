@@ -32,7 +32,7 @@ namespace EliteVA.Services
             }
             catch (Exception ex)
             {
-                logger.LogDebug(ex, "Could not set variable {name} to {value}", variable.Name, variable.Value);
+                logger.LogError(ex, "Could not set variable {name} to {value}", variable.Name, variable.Value);
             }
         }
 
@@ -51,11 +51,13 @@ namespace EliteVA.Services
                 Directory.CreateDirectory(variablesPath);
 
                 var setVariables = proxy.GetProxy().Variables.SetVariables.GroupBy(x => x.Key.category).ToList();
-                setVariables.ForEach(x => File.WriteAllLines(Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y => y.Key.name + ": " + y.Value)));
+                setVariables.ForEach(x =>
+                    File.WriteAllLines(
+                            Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y => y.Key.name + ": " + y.Value)));
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Cannot set variables");
+                logger.LogError(ex, "Cannot save variables");
             }
         }
 
@@ -67,7 +69,7 @@ namespace EliteVA.Services
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Cannot get event variable paths (object)");
+                logger.LogError(ex, "Cannot get event variable paths (object)");
                 return new List<Variable>();
             }
         }
@@ -80,7 +82,7 @@ namespace EliteVA.Services
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Cannot get event variable paths (array)");
+                logger.LogError(ex, "Cannot get event variable paths (array)");
                 return new List<Variable>();
             }
         }

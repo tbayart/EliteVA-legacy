@@ -59,7 +59,7 @@ namespace EliteVA.Support
             }
             catch (Exception ex)
             {
-                log.LogWarning("Could not get variables for {Name}", name);
+                log.LogError("Could not get variables for {Name}", name);
                 return new List<Variable>();
             }
         }
