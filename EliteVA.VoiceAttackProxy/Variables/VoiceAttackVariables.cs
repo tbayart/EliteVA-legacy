@@ -9,18 +9,18 @@ namespace EliteVA.VoiceAttackProxy.Variables
     {
         private readonly dynamic _proxy;
 
-        private Dictionary<(string category, string name), string> _setVariables;
+        private Dictionary<(string category, string name), Variable> _setVariables;
 
-        public IReadOnlyDictionary<(string category, string name), string> SetVariables => _setVariables;
+        public IReadOnlyDictionary<(string category, string name), Variable> SetVariables => _setVariables;
 
         public ILogger<VoiceAttackVariables> _log;
-        
+
         internal VoiceAttackVariables(dynamic vaProxy, IServiceProvider services)
         {
             _proxy = vaProxy;
             _log = services.GetService<ILogger<VoiceAttackVariables>>();
 
-            _setVariables = new Dictionary<(string, string), string>();
+            _setVariables = new Dictionary<(string, string), Variable>();
         }
 
         /// <summary>
@@ -29,10 +29,10 @@ namespace EliteVA.VoiceAttackProxy.Variables
         /// <typeparam name="T">The type of variable</typeparam>
         /// <param name="name">The name of the variable</param>
         /// <param name="value">The value of the variable</param>
-        public void Set<T>(string category, string name, T value)
+        public void Set(string category, Variable variable)
         {
-            TypeCode code = Convert.GetTypeCode(value);
-            Set(category, name, value, code);
+            TypeCode code = Convert.GetTypeCode(variable.Value);
+            Set(category, variable, code);
         }
 
         /// <summary>
@@ -41,34 +41,34 @@ namespace EliteVA.VoiceAttackProxy.Variables
         /// <param name="name">The name of the variable</param>
         /// <param name="value">The value of the variable</param>
         /// <param name="code">The type of variable</param>
-        public void Set(string category, string name, object value, TypeCode code)
+        public void Set(string category, Variable variable, TypeCode code)
         {
             switch (code)
             {
                 case TypeCode.Boolean:
-                    SetBoolean(category, name, (bool) Convert.ChangeType(value, typeof(bool)));
+                    SetBoolean(category, variable);
                     break;
 
                 case TypeCode.DateTime:
-                    SetDate(category, name, (DateTime) Convert.ChangeType(value, typeof(DateTime)));
+                    SetDate(category, variable);
                     break;
 
                 case TypeCode.Single:
                 case TypeCode.Decimal:
                 case TypeCode.Double:
-                    SetDecimal(category, name, (decimal) Convert.ChangeType(value, typeof(decimal)));
+                    SetDecimal(category, variable);
                     break;
 
                 case TypeCode.Char:
                 case TypeCode.String:
-                    SetText(category, name, (string) Convert.ChangeType(value, typeof(string)));
+                    SetText(category, variable);
                     break;
 
                 case TypeCode.Byte:
                 case TypeCode.Int16:
                 case TypeCode.UInt16:
                 case TypeCode.SByte:
-                    SetShort(category, name, (short) Convert.ChangeType(value, typeof(short)));
+                    SetShort(category, variable);
                     break;
 
                 case TypeCode.Int32:
@@ -77,17 +77,17 @@ namespace EliteVA.VoiceAttackProxy.Variables
                 case TypeCode.UInt64:
                     try
                     {
-                        SetInt(category, name, (int) Convert.ChangeType(value, typeof(int)));
+                        SetInt(category, variable);
                     }
                     catch (OverflowException ex)
                     {
-                        SetDecimal(category, name, (decimal) Convert.ChangeType(value, typeof(decimal)));
+                        SetDecimal(category, variable);
                     } 
                     break;
 
                 case TypeCode.Object:
-                    var newCode = Convert.GetTypeCode(value);
-                    Set(category, name, value, newCode);
+                    var newCode = Convert.GetTypeCode(variable.Value);
+                    Set(category, variable, newCode);
                     break;
 
                 case TypeCode.Empty:
@@ -107,31 +107,31 @@ namespace EliteVA.VoiceAttackProxy.Variables
             switch (code)
             {
                 case TypeCode.Boolean:
-                    return (T) Convert.ChangeType(GetBoolean(name), typeof(T));
+                    return (T)Convert.ChangeType(GetBoolean(name), typeof(T));
 
                 case TypeCode.DateTime:
-                    return (T) Convert.ChangeType(GetDate(name), typeof(T));
+                    return (T)Convert.ChangeType(GetDate(name), typeof(T));
 
                 case TypeCode.Single:
                 case TypeCode.Decimal:
                 case TypeCode.Double:
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
-                    return (T) Convert.ChangeType(GetDecimal(name), typeof(T));
+                    return (T)Convert.ChangeType(GetDecimal(name), typeof(T));
 
                 case TypeCode.Char:
                 case TypeCode.String:
-                    return (T) Convert.ChangeType(GetText(name), typeof(T));
+                    return (T)Convert.ChangeType(GetText(name), typeof(T));
 
                 case TypeCode.Byte:
                 case TypeCode.Int16:
                 case TypeCode.UInt16:
                 case TypeCode.SByte:
-                    return (T) Convert.ChangeType(GetShort(name), typeof(T));
+                    return (T)Convert.ChangeType(GetShort(name), typeof(T));
 
                 case TypeCode.Int32:
                 case TypeCode.UInt32:
-                    return (T) Convert.ChangeType(GetInt(name), typeof(T));
+                    return (T)Convert.ChangeType(GetInt(name), typeof(T));
 
                 default:
                     return default;
@@ -168,60 +168,60 @@ namespace EliteVA.VoiceAttackProxy.Variables
             return _proxy.GetDate(name);
         }
 
-        private void SetShort(string category, string name, short? value)
+        private void SetShort(string category, Variable variable)
         {
-            string variable = $"{{SHORT:{name}}}";
-            SetVariable(category, variable, value.ToString());
-
-            _proxy.SetSmallInt(name, value);
+            var value = (short)Convert.ChangeType(variable.Value, typeof(short));
+            _proxy.SetSmallInt(variable.Name, value);
+            variable.Name = $"{{SHORT:{variable.Name}}}";
+            SetVariable(category, variable);
         }
 
-        private void SetInt(string category, string name, int? value)
+        private void SetInt(string category, Variable variable)
         {
-            string variable = $"{{INT:{name}}}";
-            SetVariable(category, variable, value.ToString());
-
-            _proxy.SetInt(name, value);
+            var value = (int)Convert.ChangeType(variable.Value, typeof(int));
+            _proxy.SetInt(variable.Name, value);
+            variable.Name = $"{{INT:{variable.Name}}}";
+            SetVariable(category, variable);
         }
 
-        private void SetText(string category, string name, string value)
+        private void SetText(string category, Variable variable)
         {
-            string variable = $"{{TXT:{name}}}";
-            SetVariable(category, variable, value.ToString());
-
-            _proxy.SetText(name, value);
+            var value = (string)Convert.ChangeType(variable.Value, typeof(string));
+            _proxy.SetText(variable.Name, value);
+            variable.Name = $"{{TXT:{variable.Name}}}";
+            SetVariable(category, variable);
         }
 
-        private void SetDecimal(string category, string name, decimal? value)
+        private void SetDecimal(string category, Variable variable)
         {
-            string variable = $"{{DEC:{name}}}";
-            SetVariable(category, variable, value.ToString());
-
-            _proxy.SetDecimal(name, value);
+            var value = (decimal)Convert.ChangeType(variable.Value, typeof(decimal));
+            _proxy.SetDecimal(variable.Name, value);
+            variable.Name = $"{{DEC:{variable.Name}}}";
+            SetVariable(category, variable);
         }
 
-        private void SetBoolean(string category, string name, bool? value)
+        private void SetBoolean(string category, Variable variable)
         {
-            string variable = $"{{BOOL:{name}}}";
-            SetVariable(category, variable, value.ToString());
-
-            _proxy.SetBoolean(name, value);
+            var value = (bool)Convert.ChangeType(variable.Value, typeof(bool));
+            _proxy.SetBoolean(variable.Name, value);
+            variable.Name = $"{{BOOL:{variable.Name}}}";
+            SetVariable(category, variable);
         }
 
-        private void SetDate(string category, string name, DateTime? value)
+        private void SetDate(string category, Variable variable)
         {
-            string variable = $"{{DATE:{name}}}";
-            SetVariable(category, variable, value.ToString());
-
-            _proxy.SetDate(name, value);
+            var value = (DateTime)Convert.ChangeType(variable.Value, typeof(DateTime));
+            _proxy.SetDate(variable.Name, value);
+            variable.Name = $"{{DATE:{variable.Name}}}";
+            SetVariable(category, variable);
         }
 
-        private void SetVariable(string category, string name, string value)
+        private void SetVariable(string category, Variable variable)
         {
-            _log.LogTrace("Setting '{Name}' to '{Value}'", name, value);
+            _log.LogTrace("Setting '{Name}' to '{Value}'", variable.Name, variable.Value);
             
-            if (_setVariables.ContainsKey((category, name))) { _setVariables[(category, name)] = value; }
-            else { _setVariables.Add((category, name), value); }
+            if (_setVariables.ContainsKey((category, variable.Name))) { _setVariables[(category, variable.Name)] = variable; }
+            else { _setVariables.Add((category, variable.Name), variable); }
         }
     }
 }

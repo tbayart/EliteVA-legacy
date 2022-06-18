@@ -28,7 +28,7 @@ namespace EliteVA.Services
         {
             try
             {
-                proxy.GetProxy().Variables.Set(category, variable.Name, variable.Value);
+                proxy.GetProxy().Variables.Set(category, variable);
             }
             catch (Exception ex)
             {
@@ -53,7 +53,7 @@ namespace EliteVA.Services
                 var setVariables = proxy.GetProxy().Variables.SetVariables.GroupBy(x => x.Key.category).ToList();
                 setVariables.ForEach(x =>
                     File.WriteAllLines(
-                            Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y => y.Key.name + ": " + y.Value)));
+                            Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y => y.Key.name + ": " + y.Value.Value)));
             }
             catch (Exception ex)
             {
