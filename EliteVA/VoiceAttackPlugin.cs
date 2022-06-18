@@ -34,12 +34,17 @@ using System.Reflection;
 using Valsom.Logging.File;
 using Formatting = EliteVA.Constants.Formatting.Formatting;
 
-
 namespace EliteVA
 {
-
     public class VoiceAttackPlugin
     {
+#if DEBUG
+        static VoiceAttackPlugin()
+        {
+            System.Diagnostics.Debugger.Launch();
+        }
+#endif //DEBUG
+
         private static INeutronPlotter _neutronPlotter;
         private static IHost Host { get; set; }
         private static IProxy Proxy { get; set; }
@@ -149,7 +154,6 @@ namespace EliteVA
             var bindings = Host.Services.GetRequiredService<IBindingsProcessor>();
             Variables = Host.Services.GetRequiredService<IVariableService>();
             Log = Host.Services.GetRequiredService<ILogger<VoiceAttackPlugin>>();
-
 
             api.InitializeAsync().GetAwaiter().GetResult();
 
