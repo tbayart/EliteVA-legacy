@@ -67,7 +67,7 @@ namespace EliteVA.ProfileGenerator
 
             if (eaAssembly == null)
             {
-                _log.LogError("EliteAPI assembly was null");
+                _log.LogCritical("EliteAPI assembly was null");
                 return;
             }
 
