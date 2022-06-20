@@ -219,9 +219,7 @@ namespace EliteVA.VoiceAttackProxy.Variables
         private void SetVariable(string category, Variable variable)
         {
             _log.LogTrace("Setting '{Name}' to '{Value}'", variable.Name, variable.Value);
-            
-            if (_setVariables.ContainsKey((category, variable.Name))) { _setVariables[(category, variable.Name)] = variable; }
-            else { _setVariables.Add((category, variable.Name), variable); }
+            _setVariables[(category, variable.Name)] = variable; 
         }
     }
 }
