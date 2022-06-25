@@ -12,27 +12,31 @@ namespace EliteVA.Services
 {
     public class VariableService : IVariableService
     {
-        private readonly ILogger<VariableService> logger;
-        private readonly IProxy proxy;
-        private readonly IPaths paths;
+        #region fields
+        private readonly ILogger _logger;
+        private readonly IProxy _proxy;
+        private readonly IPaths _paths;
+        #endregion fields
 
+        #region ctor
         public VariableService(ILogger<VariableService> logger, IProxy proxy, IPaths paths)
         {
-            this.logger = logger;
-            this.proxy = proxy;
-            this.paths = paths;
+            _logger = logger;
+            _proxy = proxy;
+            _paths = paths;
         }
+        #endregion ctor
 
         /// <inheritdoc />
         public void SetVariable(string category, Variable variable)
         {
             try
             {
-                proxy.GetProxy().Variables.Set(category, variable);
+                _proxy.GetProxy().Variables.Set(category, variable);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Could not set variable {name} to {value}", variable.Name, variable.Value);
+                _logger.LogError(ex, "Could not set variable {name} to {value}", variable.Name, variable.Value);
             }
         }
 
@@ -47,17 +51,17 @@ namespace EliteVA.Services
                     SetVariable(category, variable);
                 }
 
-                var variablesPath = Path.Combine(paths.PluginDirectory.FullName, "Variables");
+                var variablesPath = Path.Combine(_paths.PluginDirectory.FullName, "Variables");
                 Directory.CreateDirectory(variablesPath);
 
-                var setVariables = proxy.GetProxy().Variables.SetVariables.GroupBy(x => x.Key.category).ToList();
+                var setVariables = _proxy.GetProxy().Variables.SetVariables.GroupBy(x => x.Key.category).ToList();
                 setVariables.ForEach(x =>
                     File.WriteAllLines(
                             Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y => y.Key.name + ": " + y.Value.Value)));
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Cannot save variables");
+                _logger.LogError(ex, "Cannot save variables");
             }
         }
 
@@ -69,7 +73,7 @@ namespace EliteVA.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Cannot get event variable paths (object)");
+                _logger.LogError(ex, "Cannot get event variable paths (object)");
                 return new List<Variable>();
             }
         }
@@ -82,7 +86,7 @@ namespace EliteVA.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Cannot get event variable paths (array)");
+                _logger.LogError(ex, "Cannot get event variable paths (array)");
                 return new List<Variable>();
             }
         }
@@ -133,14 +137,24 @@ namespace EliteVA.Services
             }
             catch (InvalidCastException ex)
             {
-                logger.LogDebug(ex, "Could not process {Path}", property.Value.Path);
+                _logger.LogDebug(ex, "Could not process {Path}", property.Value.Path);
                 return new List<Variable>();
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Could not process {Path}", property.Value.Path);
+                _logger.LogWarning(ex, "Could not process {Path}", property.Value.Path);
                 return new List<Variable>();
             }
         }
+
+        //public void ClearVariables(string category, string eventName)
+        //{
+        //    var variables = proxy.GetProxy().Variables.SetVariables
+        //        .Where(o => o.Key.category == category)
+        //        .Where(o => o.Value.SourceEvent == eventName)
+        //        .Select(o => o.Key)
+        //        .ToList();
+        //    variables.ForEach(proxy.GetProxy().Variables.Unset);
+        //}
     }
 }

@@ -13,44 +13,51 @@ namespace EliteVA.Services
 
     public class CommandService : ICommandService
     {
-        private readonly ILogger<CommandService> log;
-        private readonly IProxy proxy;
-        private readonly IPaths paths;
-        private readonly IEliteDangerousApi api;
-        private readonly IList<(DateTime timestamp, string name, bool success)> invokedCommands;
+        #region fields
+        private readonly ILogger<CommandService> _logger;
+        private readonly IProxy _proxy;
+        private readonly IPaths _paths;
+        private readonly IEliteDangerousApi _api;
+        private readonly IList<(DateTime timestamp, string name, bool success)> _invokedCommands;
+        #endregion fields
 
+        #region ctor
         public CommandService(ILogger<CommandService> log, IProxy proxy, IPaths paths, IEliteDangerousApi api)
         {
-            this.log = log;
-            this.proxy = proxy;
-            this.paths = paths;
-            this.api = api;
-            invokedCommands = new List<(DateTime, string, bool)>();
+            _logger = log;
+            _proxy = proxy;
+            _paths = paths;
+            _api = api;
+            _invokedCommands = new List<(DateTime, string, bool)>();
         }
+        #endregion ctor
 
+        #region ICommandService
         public void InvokeCommand(string command)
         {
-            if (api.HasCatchedUp == false)
+            if (_api.HasCatchedUp == false)
             {
-                log.LogDebug("Skipping '{Command}' during catchup", command);
+                _logger.LogDebug("Skipping '{Command}' during catchup", command);
                 return;
             }
 
-            if (proxy.GetProxy().Commands.Exists(command).GetAwaiter().GetResult())
+            if (_proxy.GetProxy().Commands.Exists(command).GetAwaiter().GetResult())
             {
-                invokedCommands.Add((DateTime.Now, command, true));
-                proxy.GetProxy().Commands.Invoke(command);
+                _invokedCommands.Add((DateTime.Now, command, true));
+                _proxy.GetProxy().Commands.Invoke(command);
             }
             else
             {
-                invokedCommands.Add((DateTime.Now, command, false));
-                log.LogDebug("Skipping '{Command}' because it has not been subscribed to", command);
+                _invokedCommands.Add((DateTime.Now, command, false));
+                _logger.LogDebug("Skipping '{Command}' because it has not been subscribed to", command);
             }
 
-            var commandsPath = Path.Combine(paths.PluginDirectory.FullName, "Commands");
+            var commandsPath = Path.Combine(_paths.PluginDirectory.FullName, "Commands");
             Directory.CreateDirectory(commandsPath);
 
-            File.WriteAllLines(Path.Combine(commandsPath, "InvokedCommands.txt"), invokedCommands.Select(x => $"{x.timestamp.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)} {x.name}"));
+            File.WriteAllLines(Path.Combine(commandsPath, "InvokedCommands.txt"), _invokedCommands.Select(x => $"{x.timestamp.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)} {x.name}"));
+            _proxy.GetProxy().Log.Write($"CommandService.InvokeCommand wrote {_invokedCommands.Count} elements", VoiceAttackProxy.Log.VoiceAttackColor.Pink);
         }
+        #endregion ICommandService
     }
 }

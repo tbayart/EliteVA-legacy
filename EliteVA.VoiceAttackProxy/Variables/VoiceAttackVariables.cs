@@ -7,21 +7,22 @@ namespace EliteVA.VoiceAttackProxy.Variables
 {
     public class VoiceAttackVariables
     {
+        #region fields
         private readonly dynamic _proxy;
+        private readonly Dictionary<(string category, string name), Variable> _setVariables;
+        private readonly ILogger _logger;
+        #endregion fields
 
-        private Dictionary<(string category, string name), Variable> _setVariables;
-
-        public IReadOnlyDictionary<(string category, string name), Variable> SetVariables => _setVariables;
-
-        public ILogger<VoiceAttackVariables> _log;
-
+        #region ctor
         internal VoiceAttackVariables(dynamic vaProxy, IServiceProvider services)
         {
             _proxy = vaProxy;
-            _log = services.GetService<ILogger<VoiceAttackVariables>>();
-
-            _setVariables = new Dictionary<(string, string), Variable>();
+            _logger = services.GetService<ILogger<VoiceAttackVariables>>();
+            _setVariables = new Dictionary<(string, string), Variable>(10000);
         }
+        #endregion ctor
+
+        public IReadOnlyDictionary<(string category, string name), Variable> SetVariables => _setVariables;
 
         /// <summary>
         /// Set a variable
@@ -79,10 +80,10 @@ namespace EliteVA.VoiceAttackProxy.Variables
                     {
                         SetInt(category, variable);
                     }
-                    catch (OverflowException ex)
+                    catch (OverflowException)
                     {
                         SetDecimal(category, variable);
-                    } 
+                    }
                     break;
 
                 case TypeCode.Object:
@@ -218,8 +219,8 @@ namespace EliteVA.VoiceAttackProxy.Variables
 
         private void SetVariable(string category, Variable variable)
         {
-            _log.LogTrace("Setting '{Name}' to '{Value}'", variable.Name, variable.Value);
-            _setVariables[(category, variable.Name)] = variable; 
+            _logger.LogTrace("Setting '{Name}' to '{Value}'", variable.Name, variable.Value);
+            _setVariables[(category, variable.Name)] = variable;
         }
     }
 }

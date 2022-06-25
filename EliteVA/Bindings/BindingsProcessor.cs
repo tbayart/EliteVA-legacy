@@ -2,6 +2,7 @@ using EliteAPI.Options.Processor.Abstractions;
 using EliteVA.Bindings.Abstractions;
 using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.Constants.Paths.Abstractions;
+using EliteVA.Constants.Proxy.Abstractions;
 using EliteVA.Services;
 using EliteVA.VoiceAttackProxy.Variables;
 using Microsoft.Extensions.Logging;
@@ -15,41 +16,43 @@ namespace EliteVA.Bindings
 {
     public class BindingsProcessor : IBindingsProcessor
     {
-        private readonly ILogger<BindingsProcessor> log;
-        private readonly IOptionsProcessor optionsProcessor;
-        private readonly IFormatting formats;
-        private readonly IVariableService variables;
-        private readonly IPaths paths;
+        #region fields
+        private readonly ILogger _logger;
+        private readonly IOptionsProcessor _optionsProcessor;
+        private readonly IVariableService _variables;
+        private readonly IPaths _paths;
+        #endregion fields
 
+        #region ctor
         public BindingsProcessor(ILogger<BindingsProcessor> log, IOptionsProcessor optionsProcessor,
-            IFormatting formats, IVariableService variables, IPaths paths)
+            IVariableService variables, IPaths paths)
         {
-            this.log = log;
-            this.optionsProcessor = optionsProcessor;
-            this.formats = formats;
-            this.variables = variables;
-            this.paths = paths;
+            _logger = log;
+            _optionsProcessor = optionsProcessor;
+            _variables = variables;
+            _paths = paths;
         }
+        #endregion ctor
 
         /// <inheritdoc />
         public void Bind()
         {
-            optionsProcessor.BindingsUpdated += (sender, e) =>
+            _optionsProcessor.BindingsUpdated += (sender, e) =>
             {
                 try
                 {
-                    log.LogDebug("Updating bindings ...");
+                    _logger.LogDebug("Updating bindings ...");
                     var xml = XElement.Parse(e);
 
                     var layout = GetLayout(xml);
                     var mapping = GetMapping(layout);
                     var keys = GetVariables(xml, mapping).ToList();
 
-                    variables.SetVariables("Bindings", keys);
+                    _variables.SetVariables("Bindings", keys);
                 }
                 catch (Exception ex)
                 {
-                    log.LogError(ex, "Could not set keybindings");
+                    _logger.LogError(ex, "Could not set keybindings");
                 }
             };
         }
@@ -63,7 +66,7 @@ namespace EliteVA.Bindings
             }
             catch (Exception ex)
             {
-                log.LogError(ex, "Could not get layout from keybindings");
+                _logger.LogError(ex, "Could not get layout from keybindings");
                 throw;
             }
         }
@@ -72,23 +75,23 @@ namespace EliteVA.Bindings
         {
             try
             {
-                string mappingFile = Path.Combine(paths.MappingsDirectory.FullName, $"{layout}.yml");
+                string mappingFile = Path.Combine(_paths.MappingsDirectory.FullName, $"{layout}.yml");
 
                 if (!File.Exists(mappingFile))
                 {
                     if (layout != "en-GB")
                     {
-                        log.LogWarning(
+                        _logger.LogWarning(
                             "Unsupported keybindings layout, could not find the {Layout}.yml mapping, defaulting to en-GB.yml",
                             layout);
                         return GetMapping("en-GB");
                     }
 
-                    log.LogError("Could not set keybindings, no mappings found");
+                    _logger.LogError("Could not set keybindings, no mappings found");
                     return new Dictionary<string, string>();
                 }
 
-                log.LogDebug("Reading '{MappingPath}'", mappingFile);
+                _logger.LogDebug("Reading '{MappingPath}'", mappingFile);
 
                 var entries = File.ReadAllLines(mappingFile)
                     .Where(x => !string.IsNullOrWhiteSpace(x) && x.Contains(":"));
@@ -96,27 +99,28 @@ namespace EliteVA.Bindings
             }
             catch (Exception ex)
             {
-                log.LogError(ex, "Could not get mappings from {Layout},yml", layout);
+                _logger.LogError(ex, "Could not get mappings from {Layout},yml", layout);
                 throw;
             }
         }
 
         public IEnumerable<Variable> GetVariables(XElement xml, IDictionary<string, string> mapping)
         {
-            IList<Variable> variables = new List<Variable>();
 
-            foreach (var bindingNode in xml.Elements().Where(i => i.Elements().Any()))
+            var nodes = xml.Elements().Where(i => i.Elements().Any()).ToArray();
+            var variables = new List<Variable>(nodes.Length);
+
+            foreach (var bindingNode in nodes)
             {
                 try
                 {
                     var name = bindingNode.Name.LocalName;
-
                     var primary = bindingNode.Element("Primary");
                     var secondary = bindingNode.Element("Secondary");
 
                     if (primary == null)
                     {
-                        log.LogDebug("Skipping {Name}, no bindings set", name);
+                        _logger.LogDebug("Skipping {Name}, no bindings set", name);
                         continue;
                     }
 
@@ -132,7 +136,7 @@ namespace EliteVA.Bindings
                     }
                     else
                     {
-                        log.LogDebug("Skipping {Name}, not applicable", name);
+                        _logger.LogDebug("Skipping {Name}, not applicable", name);
                         continue;
                     }
 
@@ -142,7 +146,7 @@ namespace EliteVA.Bindings
 
                     if (modifiers.Any(x => !IsApplicableBinding(x)))
                     {
-                        log.LogDebug("Skipping {Name}, modifier not applicable", name);
+                        _logger.LogDebug("Skipping {Name}, modifier not applicable", name);
                     }
 
                     string value = GetKeyBinding(active.Attribute("Key").Value, modifiers.Select(x => x.Attribute("Key").Value), mapping);
@@ -151,7 +155,7 @@ namespace EliteVA.Bindings
                 }
                 catch (Exception ex)
                 {
-                    log.LogError(ex, "Could not process {Name} keybinding", bindingNode.Name);
+                    _logger.LogError(ex, "Could not process {Name} keybinding", bindingNode.Name);
                 }
             }
 
@@ -174,7 +178,7 @@ namespace EliteVA.Bindings
 
             if (!mapping.ContainsKey(key))
             {
-                log.LogDebug("The '{Key}' key is not assigned in the mappings file", key);
+                _logger.LogDebug("The '{Key}' key is not assigned in the mappings file", key);
                 return "";
             }
 

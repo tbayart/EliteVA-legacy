@@ -34,28 +34,7 @@ namespace EliteVA.Event
         /// <inheritdoc />
         public void Bind()
         {
-            api.Events.AllEvent += (sender, e) =>
-            {
-                try
-                {
-                    string json = e.ToJson();
-
-                    if (e is NotImplementedEvent notImplemented)
-                    {
-                        json = notImplemented.Json;
-                    }
-
-                    var variable = GetVariables(e.Event, json);
-                    var command = GetCommand(e);
-
-                    variables.SetVariables("Events", variable);
-                    commands.InvokeCommand(command);
-                }
-                catch (Exception ex)
-                {
-                    log.LogError(ex, "Could not process {Event} event", e.Event);
-                }
-            };
+            api.Events.AllEvent += ProcessEvent;
         }
 
         public IEnumerable<Variable> GetVariables(string eventName, string json)
@@ -77,6 +56,29 @@ namespace EliteVA.Event
         public string GetCommand(IEvent e)
         {
             return formats.Events.ToCommand(e);
+        }
+
+        private void ProcessEvent(object sender, IEvent e)
+        {
+            try
+            {
+                string json = e.ToJson();
+
+                if (e is NotImplementedEvent notImplemented)
+                {
+                    json = notImplemented.Json;
+                }
+
+                var variable = GetVariables(e.Event, json);
+                var command = GetCommand(e);
+
+                variables.SetVariables("Events", variable);
+                commands.InvokeCommand(command);
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Could not process {Event} event", e.Event);
+            }
         }
     }
 }

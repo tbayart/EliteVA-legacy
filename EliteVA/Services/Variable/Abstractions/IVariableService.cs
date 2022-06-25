@@ -7,12 +7,6 @@ namespace EliteVA.Services
     public interface IVariableService
     {
         /// <summary>
-        /// Sets a VoiceAttack variable
-        /// </summary>
-        /// <param name="variable">The variable to be set</param>
-        void SetVariable(string category, Variable variable);
-        
-        /// <summary>
         /// Sets VoiceAttack variables
         /// </summary>
         /// <param name="variables">The variables to be set</param>
@@ -22,7 +16,7 @@ namespace EliteVA.Services
         /// Gets all JToken's from a JObject
         /// </summary>
         List<Variable> GetPaths(JObject jObject, string sourceEvent);
-        
+
         /// <summary>
         /// Gets all JToken's from a JArray
         /// </summary>

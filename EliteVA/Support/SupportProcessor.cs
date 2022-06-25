@@ -7,7 +7,6 @@ using EliteVA.VoiceAttackProxy.Variables;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,32 +14,34 @@ namespace EliteVA.Support
 {
     public class SupportProcessor : ISupportProcessor
     {
-        private readonly ILogger<SupportProcessor> log;
-        private readonly IEliteDangerousApi api;
-        private readonly IStatusProcessor status;
-        private readonly IFormatting formats;
-        private readonly IVariableService variables;
-        private readonly ICommandService commands;
+        #region fields
+        private readonly ILogger<SupportProcessor> _logger;
+        private readonly IStatusProcessor _status;
+        private readonly IFormatting _formats;
+        private readonly IVariableService _variables;
+        private readonly ICommandService _commands;
+        #endregion fields
 
-        public SupportProcessor(ILogger<SupportProcessor> log, IEliteDangerousApi api, IStatusProcessor status, IFormatting formats, IVariableService variables, ICommandService commands)
+        #region ctor
+        public SupportProcessor(ILogger<SupportProcessor> log, IStatusProcessor status, IFormatting formats, IVariableService variables, ICommandService commands)
         {
-            this.log = log;
-            this.api = api;
-            this.status = status;
-            this.formats = formats;
-            this.variables = variables;
-            this.commands = commands;
+            _logger = log;
+            _status = status;
+            _formats = formats;
+            _variables = variables;
+            _commands = commands;
         }
+        #endregion ctor
 
         public void Bind()
         {
-            status.CargoUpdated += (sender, e) => SetVariablesAndInvoke("Status.Cargo", e.Cargo);
-            status.MarketUpdated += (sender, e) => SetVariablesAndInvoke("Status.Market", e.Market);
-            status.ModulesUpdated += (sender, e) => SetVariablesAndInvoke("Status.Modules", e.Modules);
-            status.NavRouteUpdated += (sender, e) => SetVariablesAndInvoke("Status.NavRoute", e.NavRoute);
-            status.OutfittingUpdated += (sender, e) => SetVariablesAndInvoke("Status.Outfitting", e.Outfitting);
-            status.BackpackUpdated += (sender, e) => SetVariablesAndInvoke("Status.Backpack", e.Backpack);
-            status.ShipyardUpdated += (sender, e) => SetVariablesAndInvoke("Status.Shipyard", e.Shipyard);
+            _status.CargoUpdated += (sender, e) => SetVariablesAndInvoke("Status.Cargo", e.Cargo);
+            _status.MarketUpdated += (sender, e) => SetVariablesAndInvoke("Status.Market", e.Market);
+            _status.ModulesUpdated += (sender, e) => SetVariablesAndInvoke("Status.Modules", e.Modules);
+            _status.NavRouteUpdated += (sender, e) => SetVariablesAndInvoke("Status.NavRoute", e.NavRoute);
+            _status.OutfittingUpdated += (sender, e) => SetVariablesAndInvoke("Status.Outfitting", e.Outfitting);
+            _status.BackpackUpdated += (sender, e) => SetVariablesAndInvoke("Status.Backpack", e.Backpack);
+            _status.ShipyardUpdated += (sender, e) => SetVariablesAndInvoke("Status.Shipyard", e.Shipyard);
         }
 
         public IEnumerable<Variable> GetVariables(string name, object value)
@@ -48,25 +49,25 @@ namespace EliteVA.Support
             try
             {
                 var jObject = JsonConvert.DeserializeObject<JObject>(JsonConvert.SerializeObject(value));
-                var vars = variables.GetPaths(jObject, string.Empty);
-                return vars.Select(x => new Variable(string.Empty, x.Name = formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
+                var vars = _variables.GetPaths(jObject, string.Empty);
+                return vars.Select(x => new Variable(string.Empty, x.Name = _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
             }
-            catch (JsonSerializationException ex)
+            catch (JsonSerializationException)
             {
                 var jArray = JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(value));
-                var vars = variables.GetPaths(jArray, string.Empty);
-                return vars.Select(x => new Variable(string.Empty, x.Name = formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
+                var vars = _variables.GetPaths(jArray, string.Empty);
+                return vars.Select(x => new Variable(string.Empty, x.Name = _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
             }
-            catch (Exception ex)
+            catch
             {
-                log.LogError("Could not get variables for {Name}", name);
+                _logger.LogError("Could not get variables for {Name}", name);
                 return new List<Variable>();
             }
         }
 
         public string GetCommand(string name)
         {
-            return formats.Support.ToCommand(name);
+            return _formats.Support.ToCommand(name);
         }
 
         void SetVariablesAndInvoke<T>(string name, T value)
@@ -74,9 +75,9 @@ namespace EliteVA.Support
             var statusVariables = GetVariables(name, value);
             var command = GetCommand(name);
 
-            variables.SetVariables(name, statusVariables);
+            _variables.SetVariables(name, statusVariables);
 
-            commands.InvokeCommand(command);
+            _commands.InvokeCommand(command);
         }
     }
 }
