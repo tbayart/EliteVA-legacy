@@ -17,14 +17,14 @@ namespace EliteVA.Bindings.Abstractions
         /// <param name="xml"></param>
         /// <returns></returns>
         string GetLayout(XElement xml);
-        
+
         /// <summary>
         /// Gets the mappings from the configuration direction
         /// </summary>
         /// <param name="layout"></param>
         /// <returns></returns>
         IDictionary<string, string> GetMapping(string layout);
-        
+
         /// <summary>
         /// Generates the variables needed
         /// </summary>

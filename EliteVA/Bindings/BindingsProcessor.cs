@@ -1,8 +1,6 @@
 using EliteAPI.Options.Processor.Abstractions;
 using EliteVA.Bindings.Abstractions;
-using EliteVA.Constants.Formatting.Abstractions;
 using EliteVA.Constants.Paths.Abstractions;
-using EliteVA.Constants.Proxy.Abstractions;
 using EliteVA.Services;
 using EliteVA.VoiceAttackProxy.Variables;
 using Microsoft.Extensions.Logging;
@@ -34,6 +32,7 @@ namespace EliteVA.Bindings
         }
         #endregion ctor
 
+        #region IBindingsProcessor
         /// <inheritdoc />
         public void Bind()
         {
@@ -99,7 +98,7 @@ namespace EliteVA.Bindings
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Could not get mappings from {Layout},yml", layout);
+                _logger.LogError(ex, "Could not get mappings from {Layout}.yml", layout);
                 throw;
             }
         }
@@ -161,7 +160,9 @@ namespace EliteVA.Bindings
 
             return variables;
         }
+        #endregion IBindingsProcessor
 
+        #region methods
         private string GetKeyBinding(string key, IEnumerable<string> mods, IDictionary<string, string> mapping)
         {
             return string.Join("", mods.Select(mod => GetKey(mod, mapping))) + GetKey(key, mapping);
@@ -193,5 +194,6 @@ namespace EliteVA.Bindings
             return deviceNode != null && deviceNode.Value == "Keyboard" && keyNode != null &&
                    keyNode.Value.StartsWith("Key_");
         }
+        #endregion methods
     }
 }
