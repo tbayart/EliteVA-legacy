@@ -58,7 +58,7 @@ namespace EliteVA.Services
                 var setVariables = _proxy.GetProxy().Variables.SetVariables.GroupBy(x => x.Key.category).ToList();
                 setVariables.ForEach(x =>
                     File.WriteAllLines(
-                            Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y => y.Key.name + ": " + y.Value.Value)));
+                            Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y => y.Value.ToString())));
             }
             catch (Exception ex)
             {
@@ -133,21 +133,17 @@ namespace EliteVA.Services
                     case JTokenType.Float:
                         return new List<Variable>
                             {new Variable(sourceEvent,property.Value.Path, property.Value.ToObject<decimal>())};
-
-                    default:
-                        return new List<Variable>();
                 }
             }
             catch (InvalidCastException ex)
             {
                 _logger.LogDebug(ex, "Could not process {Path}", property.Value.Path);
-                return new List<Variable>();
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Could not process {Path}", property.Value.Path);
-                return new List<Variable>();
             }
+            return new List<Variable>();
         }
 
         //public void ClearVariables(string category, string eventName)
