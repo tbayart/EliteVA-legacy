@@ -70,14 +70,13 @@ namespace EliteVA.Event
             try
             {
                 string json = e.ToJson();
-
                 if (e is NotImplementedEvent notImplemented)
                 {
                     json = notImplemented.Json;
                 }
 
-                var variable = GetVariables(e.Event, json);
-                _variables.SetVariables("Events", variable);
+                var variables = GetVariables(e.Event, json);
+                _variables.SetVariables("Events", variables);
                 var command = GetCommand(e);
                 _commands.InvokeCommand(command);
             }
