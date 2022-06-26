@@ -16,6 +16,7 @@ namespace EliteVA.Services
         private readonly ILogger _logger;
         private readonly IProxy _proxy;
         private readonly IPaths _paths;
+        private readonly string _variablesPath;
         #endregion fields
 
         #region ctor
@@ -24,6 +25,8 @@ namespace EliteVA.Services
             _logger = logger;
             _proxy = proxy;
             _paths = paths;
+            _variablesPath = Path.Combine(_paths.PluginDirectory.FullName, "Variables");
+            Directory.CreateDirectory(_variablesPath);
         }
         #endregion ctor
 
@@ -52,13 +55,12 @@ namespace EliteVA.Services
                     SetVariable(category, variable);
                 }
 
-                var variablesPath = Path.Combine(_paths.PluginDirectory.FullName, "Variables");
-                Directory.CreateDirectory(variablesPath);
-
-                var setVariables = _proxy.GetProxy().Variables.SetVariables.GroupBy(x => x.Key.category).ToList();
-                setVariables.ForEach(x =>
-                    File.WriteAllLines(
-                            Path.Combine(variablesPath, x.Key + ".txt"), x.Select(y => y.Value.ToString())));
+                var setVariables = _proxy.GetProxy().Variables.SetVariables
+                    .Where(x => x.Key.category == category)
+                    .Select(o => o.Value.ToString())
+                    .ToList();
+                var variablesPath = Path.Combine(_variablesPath, category + ".txt");
+                File.WriteAllLines(variablesPath, setVariables);
             }
             catch (Exception ex)
             {
