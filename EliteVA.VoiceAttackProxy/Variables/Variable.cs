@@ -2,7 +2,7 @@ using System;
 
 namespace EliteVA.VoiceAttackProxy.Variables
 {
-    public class Variable
+    public class Variable : IEquatable<Variable>
     {
         private string _toString;
 
@@ -23,7 +23,22 @@ namespace EliteVA.VoiceAttackProxy.Variables
 
         public VariableValueType ValueType { get; }
 
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
         public override string ToString() => _toString;
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Variable);
+        }
+
+        public bool Equals(Variable other)
+        {
+            return other?.Name == Name;
+        }
     }
 
     public enum VariableValueType { BOOL, DATE, DEC, TXT, SHORT, INT }
