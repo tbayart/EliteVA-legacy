@@ -49,14 +49,13 @@ namespace EliteVA.VoiceAttackProxy.Variables
             var sourceEvent = variables.Select(o => o.SourceEvent).First();
             if (string.IsNullOrEmpty(sourceEvent) == false)
             {
-                // get expired variables to unset
-                var toUnset = _setVariables
-                    .Where(o => o.Key.category == category)
+                _setVariables.Where(o => o.Key.category == category)
                     .Select(o => o.Value)
                     .Where(o => o.SourceEvent == sourceEvent)
-                    .Except(variables);
-                foreach (var variable in toUnset)
-                    UnSet(category, variable);
+                    .Except(variables)
+                    .ToList()
+                    // unset expired variables
+                    .ForEach(variable => UnSet(category, variable));
             }
             foreach (var variable in variables)
                 Set(category, variable);
