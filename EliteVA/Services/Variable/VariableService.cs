@@ -32,28 +32,11 @@ namespace EliteVA.Services
 
         #region IVariableService
         /// <inheritdoc />
-        public void SetVariable(string category, Variable variable)
+        public void SetVariables(string category, IEnumerable<Variable> variables)
         {
             try
             {
-                _proxy.GetProxy().Variables.Set(category, variable);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Could not set variable {name} to {value}", variable.Name, variable.Value);
-            }
-        }
-
-        /// <inheritdoc />
-        public void SetVariables(string category, IEnumerable<Variable> variablesEnumerable)
-        {
-            try
-            {
-                var variables = variablesEnumerable.ToList();
-                foreach (var variable in variables)
-                {
-                    SetVariable(category, variable);
-                }
+                _proxy.GetProxy().Variables.Set(category, variables);
 
                 var setVariables = _proxy.GetProxy().Variables.SetVariables
                     .Where(x => x.Key.category == category)
@@ -147,16 +130,6 @@ namespace EliteVA.Services
             }
             return new List<Variable>();
         }
-
-        //public void ClearVariables(string category, string eventName)
-        //{
-        //    var variables = proxy.GetProxy().Variables.SetVariables
-        //        .Where(o => o.Key.category == category)
-        //        .Where(o => o.Value.SourceEvent == eventName)
-        //        .Select(o => o.Key)
-        //        .ToList();
-        //    variables.ForEach(proxy.GetProxy().Variables.Unset);
-        //}
         #endregion methods
     }
 }
