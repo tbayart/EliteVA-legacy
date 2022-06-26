@@ -1,4 +1,3 @@
-// EliteVA.VoiceAttackProxy.Log.VoiceAttackLog
 using System;
 using System.Threading.Tasks;
 
