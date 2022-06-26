@@ -27,9 +27,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Somfic.Logging.VoiceAttack;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using Valsom.Logging.File;
 using Formatting = EliteVA.Constants.Formatting.Formatting;
@@ -45,15 +45,17 @@ namespace EliteVA
         }
 #endif //DEBUG
 
+        private static Stopwatch _catchupTime = Stopwatch.StartNew();
+
         private static INeutronPlotter _neutronPlotter;
+
         private static IHost Host { get; set; }
+
         private static IProxy Proxy { get; set; }
 
         private static IVariableService Variables { get; set; }
 
         public static ILogger<VoiceAttackPlugin> Log { get; set; }
-
-        private static HttpClient Client { get; set; }
 
         private static string PluginDir { get; set; }
 
@@ -103,7 +105,8 @@ namespace EliteVA
         private static void Initialize(dynamic vaProxy)
         {
             PluginDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppDomain.CurrentDomain.BaseDirectory;
-            Directory.CreateDirectory(Path.Combine(PluginDir, "Logs"));
+            var logPath = Path.Combine(PluginDir, "Logs");
+            Directory.CreateDirectory(logPath);
 
             Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
@@ -142,9 +145,8 @@ namespace EliteVA
             Proxy = Host.Services.GetRequiredService<IProxy>();
             Proxy.SetProxy(vaProxy);
 
-            Client = new HttpClient();
-
             var api = Host.Services.GetRequiredService<IEliteDangerousApi>();
+            api.OnCatchedUp += EliteApiCatchedUp;
 
             _neutronPlotter = Host.Services.GetRequiredService<INeutronPlotter>();
 
@@ -163,6 +165,12 @@ namespace EliteVA
             bindings.Bind();
 
             api.StartAsync();
+        }
+
+        private static void EliteApiCatchedUp(object sender, EventArgs e)
+        {
+            Proxy.GetProxy().Log.Write($"Catchup done in {_catchupTime.Elapsed}", VoiceAttackProxy.Log.VoiceAttackColor.Pink);
+            Host.Services.GetRequiredService<IEliteDangerousApi>().OnCatchedUp -= EliteApiCatchedUp;
         }
     }
 }
