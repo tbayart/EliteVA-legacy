@@ -51,13 +51,13 @@ namespace EliteVA.Support
             {
                 var jObject = JsonConvert.DeserializeObject<JObject>(JsonConvert.SerializeObject(value));
                 var vars = _variables.GetPaths(jObject, string.Empty);
-                return vars.Select(x => new Variable(string.Empty, x.Name = _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
+                return vars.Select(x => new Variable(string.Empty, _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
             }
             catch (JsonSerializationException)
             {
                 var jArray = JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(value));
                 var vars = _variables.GetPaths(jArray, string.Empty);
-                return vars.Select(x => new Variable(string.Empty, x.Name = _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
+                return vars.Select(x => new Variable(string.Empty, _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
             }
             catch
             {
@@ -76,10 +76,8 @@ namespace EliteVA.Support
         void SetVariablesAndInvoke<T>(string name, T value)
         {
             var statusVariables = GetVariables(name, value);
-            var command = GetCommand(name);
-
             _variables.SetVariables(name, statusVariables);
-
+            var command = GetCommand(name);
             _commands.InvokeCommand(command);
         }
         #endregion methods
