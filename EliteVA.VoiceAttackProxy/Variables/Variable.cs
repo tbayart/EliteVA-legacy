@@ -47,37 +47,44 @@ namespace EliteVA.VoiceAttackProxy.Variables
     {
         public static VariableValueType ResolveValueType(ref object value)
         {
-            switch (Convert.GetTypeCode(value))
+            try
             {
-                case TypeCode.Boolean:
-                    return VariableValueType.BOOL;
+                switch (Convert.GetTypeCode(value))
+                {
+                    case TypeCode.Boolean:
+                        return VariableValueType.BOOL;
 
-                case TypeCode.DateTime:
-                    return VariableValueType.DATE;
+                    case TypeCode.DateTime:
+                        return VariableValueType.DATE;
 
-                case TypeCode.UInt32:
-                case TypeCode.Int64:
-                case TypeCode.UInt64:
-                case TypeCode.Single:
-                case TypeCode.Double:
-                case TypeCode.Decimal:
-                    value = Convert.ChangeType(value, TypeCode.Decimal);
-                    return VariableValueType.DEC;
+                    case TypeCode.UInt32:
+                    case TypeCode.Int64:
+                    case TypeCode.UInt64:
+                    case TypeCode.Single:
+                    case TypeCode.Double:
+                    case TypeCode.Decimal:
+                        value = Convert.ChangeType(value, TypeCode.Decimal);
+                        return VariableValueType.DEC;
 
-                case TypeCode.String:
-                    return VariableValueType.TXT;
+                    case TypeCode.String:
+                        return VariableValueType.TXT;
 
-                case TypeCode.Byte:
-                case TypeCode.Int16:
-                case TypeCode.UInt16:
-                case TypeCode.SByte:
-                    value = Convert.ChangeType(value, TypeCode.Int16);
-                    return VariableValueType.SHORT;
+                    case TypeCode.Byte:
+                    case TypeCode.Int16:
+                    case TypeCode.UInt16:
+                    case TypeCode.SByte:
+                        value = Convert.ChangeType(value, TypeCode.Int16);
+                        return VariableValueType.SHORT;
 
-                case TypeCode.Int32:
-                    return VariableValueType.INT;
+                    case TypeCode.Int32:
+                        value = Convert.ChangeType(value, TypeCode.Int32);
+                        return VariableValueType.INT;
+                }
             }
-
+            catch (Exception ex)
+            {
+                _ = ex;
+            }
             value = value?.ToString();
             return VariableValueType.TXT;
         }
