@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace EliteVA.VoiceAttackProxy.Variables
@@ -27,32 +28,56 @@ namespace EliteVA.VoiceAttackProxy.Variables
         /// <summary>
         /// Set a variable
         /// </summary>
-        /// <typeparam name="T">The type of variable</typeparam>
         /// <param name="name">The name of the variable</param>
         /// <param name="value">The value of the variable</param>
         public void Set(string category, Variable variable)
         {
             try
             {
-                switch (variable.ValueType)
-                {
-                    case VariableValueType.BOOL: SetBoolean(variable); break;
-                    case VariableValueType.DATE: SetDate(variable); break;
-                    case VariableValueType.DEC: SetDecimal(variable); break;
-                    case VariableValueType.TXT: SetText(variable); break;
-                    case VariableValueType.SHORT: SetShort(variable); break;
-                    case VariableValueType.INT: SetInt(variable); break;
-                }
-            }
-            catch (InvalidCastException ex)
-            {
-                _ = ex;
+                ProxySet(variable.ValueType, variable.Name, variable.Value);
+                _setVariables[(category, variable.Name)] = variable;
+                _logger.LogTrace("Variable '{Name}' set to '{Value}'", variable.Name, variable.Value);
             }
             catch (Exception ex)
             {
-                _ = ex;
+                _logger.LogError(ex, "Could not set variable {name} to {value}", variable.Name, variable.Value);
             }
-            SetVariable(category, variable);
+        }
+
+        public void Set(string category, IEnumerable<Variable> variables)
+        {
+            var sourceEvent = variables.Select(o => o.SourceEvent).First();
+            if (string.IsNullOrEmpty(sourceEvent) == false)
+            {
+                // get expired variables to unset
+                var toUnset = _setVariables
+                    .Where(o => o.Key.category == category)
+                    .Select(o => o.Value)
+                    .Where(o => o.SourceEvent == sourceEvent)
+                    .Except(variables);
+                foreach (var variable in toUnset)
+                    UnSet(category, variable);
+            }
+            foreach (var variable in variables)
+                Set(category, variable);
+        }
+
+        public void UnSet(string category, Variable variable)
+        {
+            var key = (category, variable.Name);
+            if (_setVariables.TryGetValue(key, out variable) == false)
+                return;
+
+            try
+            {
+                ProxySet(variable.ValueType, variable.Name, null);
+                _setVariables.Remove(key);
+                _logger.LogTrace("Variable '{Name}' unset", variable.Name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not unset variable {name}", variable.Name);
+            }
         }
 
         /// <summary>
@@ -98,6 +123,19 @@ namespace EliteVA.VoiceAttackProxy.Variables
             }
         }
 
+        private void ProxySet(VariableValueType valueType, string name, object value)
+        {
+            switch (valueType)
+            {
+                case VariableValueType.SHORT: SetShort(name, (short?)value); break;
+                case VariableValueType.INT: SetInt(name, (int?)value); break;
+                case VariableValueType.TXT: SetText(name, (string)value); break;
+                case VariableValueType.DEC: SetDecimal(name, (decimal?)value); break;
+                case VariableValueType.BOOL: SetBoolean(name, (bool?)value); break;
+                case VariableValueType.DATE: SetDate(name, (DateTime?)value); break;
+            }
+        }
+
         private short? GetShort(string name) => _proxy.GetSmallInt(name);
 
         private int? GetInt(string name) => _proxy.GetInt(name);
@@ -110,22 +148,16 @@ namespace EliteVA.VoiceAttackProxy.Variables
 
         private DateTime? GetDate(string name) => _proxy.GetDate(name);
 
-        private void SetShort(Variable variable) => _proxy.SetSmallInt(variable.Name, (short)variable.Value);
+        private void SetShort(string name, short? value) => _proxy.SetSmallInt(name, value);
 
-        private void SetInt(Variable variable) => _proxy.SetInt(variable.Name, (int)variable.Value);
+        private void SetInt(string name, int? value) => _proxy.SetInt(name, value);
 
-        private void SetText(Variable variable) => _proxy.SetText(variable.Name, (string)variable.Value);
+        private void SetText(string name, string value) => _proxy.SetText(name, value);
 
-        private void SetDecimal(Variable variable) => _proxy.SetDecimal(variable.Name, (decimal)variable.Value);
+        private void SetDecimal(string name, decimal? value) => _proxy.SetDecimal(name, value);
 
-        private void SetBoolean(Variable variable) => _proxy.SetBoolean(variable.Name, (bool)variable.Value);
+        private void SetBoolean(string name, bool? value) => _proxy.SetBoolean(name, value);
 
-        private void SetDate(Variable variable) => _proxy.SetDate(variable.Name, (DateTime)variable.Value);
-
-        private void SetVariable(string category, Variable variable)
-        {
-            _logger.LogTrace("Setting '{Name}' to '{Value}'", variable.Name, variable.Value);
-            _setVariables[(category, variable.Name)] = variable;
-        }
+        private void SetDate(string name, DateTime? value) => _proxy.SetDate(name, value);
     }
 }
