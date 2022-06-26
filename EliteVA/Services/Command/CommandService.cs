@@ -17,7 +17,7 @@ namespace EliteVA.Services
         private readonly IProxy _proxy;
         private readonly IPaths _paths;
         private readonly IEliteDangerousApi _api;
-        private readonly Lazy<string> _commandsPath;
+        private readonly string _commandsPath;
         #endregion fields
 
         #region ctor
@@ -27,7 +27,8 @@ namespace EliteVA.Services
             _proxy = proxy;
             _paths = paths;
             _api = api;
-            _commandsPath = new Lazy<string>(CommandPathFactory);
+            _commandsPath = Path.Combine(_paths.PluginDirectory.FullName, "Commands");
+            Directory.CreateDirectory(_commandsPath);
         }
         #endregion ctor
 
@@ -54,19 +55,12 @@ namespace EliteVA.Services
         #endregion ICommandService
 
         #region methods
-        private string CommandPathFactory()
-        {
-            var commandsPath = Path.Combine(_paths.PluginDirectory.FullName, "Commands");
-            Directory.CreateDirectory(commandsPath);
-            return commandsPath;
-        }
-
         private void AppendInvokedCommands(params string[] commands)
         {
             var now = DateTime.Now;
             var date = now.ToString("yyyy-MM-dd");
             var time = now.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
-            var commandsPath = Path.Combine(_commandsPath.Value, $"InvokedCommands_{date}.txt");
+            var commandsPath = Path.Combine(_commandsPath, $"InvokedCommands_{date}.txt");
             File.AppendAllLines(commandsPath, commands.Select(o => $"{time} {o}"));
         }
         #endregion methods
