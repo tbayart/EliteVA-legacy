@@ -16,25 +16,30 @@ namespace EliteVA.Event
 {
     public class EventProcessor : IEventProcessor
     {
-        private readonly ILogger<EventProcessor> log;
-        private readonly IEliteDangerousApi api;
-        private readonly IFormatting formats;
-        private readonly IVariableService variables;
-        private readonly ICommandService commands;
+        #region fields
+        private readonly ILogger _logger;
+        private readonly IEliteDangerousApi _api;
+        private readonly IFormatting _formats;
+        private readonly IVariableService _variables;
+        private readonly ICommandService _commands;
+        #endregion fields
 
+        #region ctor
         public EventProcessor(ILogger<EventProcessor> log, IEliteDangerousApi api, IFormatting formats, IVariableService variables, ICommandService commands)
         {
-            this.log = log;
-            this.api = api;
-            this.formats = formats;
-            this.variables = variables;
-            this.commands = commands;
+            _logger = log;
+            _api = api;
+            _formats = formats;
+            _variables = variables;
+            _commands = commands;
         }
+        #endregion ctor
 
+        #region IEventProcessor
         /// <inheritdoc />
         public void Bind()
         {
-            api.Events.AllEvent += ProcessEvent;
+            _api.Events.AllEvent += ProcessEvent;
         }
 
         public IEnumerable<Variable> GetVariables(string eventName, string json)
@@ -42,12 +47,12 @@ namespace EliteVA.Event
             try
             {
                 var jObject = JsonConvert.DeserializeObject<JObject>(json);
-                var vars = variables.GetPaths(jObject, string.Empty);
-                return vars.Select(x => new Variable(eventName, x.Name = formats.Events.ToVariable(eventName, x.Name), x.Value));
+                var vars = _variables.GetPaths(jObject, string.Empty);
+                return vars.Select(x => new Variable(eventName, x.Name = _formats.Events.ToVariable(eventName, x.Name), x.Value));
             }
             catch (Exception ex)
             {
-                log.LogError(ex, "Could not set variables for {Name} event", eventName);
+                _logger.LogError(ex, "Could not set variables for {Name} event", eventName);
                 return new List<Variable>();
             }
         }
@@ -55,9 +60,11 @@ namespace EliteVA.Event
         /// <inheritdoc />
         public string GetCommand(IEvent e)
         {
-            return formats.Events.ToCommand(e);
+            return _formats.Events.ToCommand(e);
         }
+        #endregion IEventProcessor
 
+        #region methods
         private void ProcessEvent(object sender, IEvent e)
         {
             try
@@ -72,13 +79,14 @@ namespace EliteVA.Event
                 var variable = GetVariables(e.Event, json);
                 var command = GetCommand(e);
 
-                variables.SetVariables("Events", variable);
-                commands.InvokeCommand(command);
+                _variables.SetVariables("Events", variable);
+                _commands.InvokeCommand(command);
             }
             catch (Exception ex)
             {
-                log.LogError(ex, "Could not process {Event} event", e.Event);
+                _logger.LogError(ex, "Could not process {Event} event", e.Event);
             }
         }
+        #endregion methods
     }
 }

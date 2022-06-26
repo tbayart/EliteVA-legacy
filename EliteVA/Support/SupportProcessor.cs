@@ -33,6 +33,7 @@ namespace EliteVA.Support
         }
         #endregion ctor
 
+        #region ISupportProcessor
         public void Bind()
         {
             _status.CargoUpdated += (sender, e) => SetVariablesAndInvoke("Status.Cargo", e.Cargo);
@@ -69,7 +70,9 @@ namespace EliteVA.Support
         {
             return _formats.Support.ToCommand(name);
         }
+        #endregion ISupportProcessor
 
+        #region methods
         void SetVariablesAndInvoke<T>(string name, T value)
         {
             var statusVariables = GetVariables(name, value);
@@ -79,5 +82,6 @@ namespace EliteVA.Support
 
             _commands.InvokeCommand(command);
         }
+        #endregion methods
     }
 }

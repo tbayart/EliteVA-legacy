@@ -14,7 +14,7 @@ namespace EliteVA.Services
     public class CommandService : ICommandService
     {
         #region fields
-        private readonly ILogger<CommandService> _logger;
+        private readonly ILogger _logger;
         private readonly IProxy _proxy;
         private readonly IPaths _paths;
         private readonly IEliteDangerousApi _api;
@@ -56,7 +56,6 @@ namespace EliteVA.Services
             Directory.CreateDirectory(commandsPath);
 
             File.WriteAllLines(Path.Combine(commandsPath, "InvokedCommands.txt"), _invokedCommands.Select(x => $"{x.timestamp.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)} {x.name}"));
-            _proxy.GetProxy().Log.Write($"CommandService.InvokeCommand wrote {_invokedCommands.Count} elements", VoiceAttackProxy.Log.VoiceAttackColor.Pink);
         }
         #endregion ICommandService
     }

@@ -27,6 +27,7 @@ namespace EliteVA.Services
         }
         #endregion ctor
 
+        #region IVariableService
         /// <inheritdoc />
         public void SetVariable(string category, Variable variable)
         {
@@ -90,7 +91,9 @@ namespace EliteVA.Services
                 return new List<Variable>();
             }
         }
+        #endregion IVariableService
 
+        #region methods
         private List<Variable> GetPaths(JProperty property, string sourceEvent)
         {
             try
@@ -156,5 +159,6 @@ namespace EliteVA.Services
         //        .ToList();
         //    variables.ForEach(proxy.GetProxy().Variables.Unset);
         //}
+        #endregion methods
     }
 }
