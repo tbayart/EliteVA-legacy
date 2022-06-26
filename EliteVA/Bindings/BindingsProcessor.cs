@@ -42,11 +42,9 @@ namespace EliteVA.Bindings
                 {
                     _logger.LogDebug("Updating bindings ...");
                     var xml = XElement.Parse(e);
-
                     var layout = GetLayout(xml);
                     var mapping = GetMapping(layout);
-                    var keys = GetVariables(xml, mapping).ToList();
-
+                    var keys = GetVariables(xml, mapping);
                     _variables.SetVariables("Bindings", keys);
                 }
                 catch (Exception ex)
