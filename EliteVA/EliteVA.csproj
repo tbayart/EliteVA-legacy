@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <FileVersion>1.1.0.0</FileVersion>
     <InformationalVersion>1.1.0-fork</InformationalVersion>
@@ -8,7 +8,6 @@
     <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="EliteAPI" Version="3.0.0-alpha1173" />
     <PackageReference Include="EliteAPI.Spansh" Version="3.0.0-alpha1173" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="5.0.0" />
