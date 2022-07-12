@@ -6,10 +6,8 @@ using EliteVA.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.Text.Json;
+using System.Linq;
 using Xunit;
 using Formatting = EliteVA.Constants.Formatting.Formatting;
 using IEventProcessor = EliteVA.Event.Abstractions.IEventProcessor;
@@ -47,26 +45,13 @@ namespace EliteVA.Tests
                 }
             };
 
-        [Theory(DisplayName = "Command name")]
-        [MemberData(nameof(Data))]
-        public void Name(IEvent e, string expectedCommand, IEnumerable<string> expectedVariables)
-        {
-            IEventProcessor events = new EventProcessor( Mock.Of<ILogger<EventProcessor>>(), Mock.Of<IEliteDangerousApi>(), new Formatting(), Mock.Of<IVariableService>(), Mock.Of<ICommandService>());
-
-            events.GetCommand(e).Should().Be(expectedCommand);
-        }
-
-        [Theory(DisplayName = "Command variables")]
+        [Theory(DisplayName = "EventProcessor")]
         [MemberData(nameof(Data))]
         public void Variables(IEvent e, string expectedCommand, IEnumerable<string> expectedVariables)
         {
-            //IEventProcessor events = new EventProcessor(Mock.Of<ILogger<EventProcessor>>(),Mock.Of<IEliteDangerousApi>(), new Formatting(), Mock.Of<IVariableService>(), Mock.Of<ICommandService>());
-
-            JObject jObject = JsonConvert.DeserializeObject<JObject>(e.ToJson());
-
-            jObject.Type.Should().Be(JTokenType.Comment);
-
-            //events.GetVariables(e).Select(x => x.Name).Should().Contain(expectedVariables);
+            IEventProcessor events = new EventProcessor(Mock.Of<ILogger<EventProcessor>>(), Mock.Of<IEliteDangerousApi>(), new Formatting(), Mock.Of<IVariableService>(), Mock.Of<ICommandService>());
+            events.GetVariables(e.Event, e.ToJson()).Select(x => x.Name).Should().Contain(expectedVariables);
+            events.GetCommand(e).Should().Be(expectedCommand);
         }
     }
 }
