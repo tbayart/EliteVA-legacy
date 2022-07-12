@@ -64,7 +64,7 @@ namespace EliteVA.Tests
 
             JObject jObject = JsonConvert.DeserializeObject<JObject>(e.ToJson());
 
-            jObject.Type.Should().Be(JsonTokenType.Comment);
+            jObject.Type.Should().Be(JTokenType.Comment);
 
             //events.GetVariables(e).Select(x => x.Name).Should().Contain(expectedVariables);
         }
