@@ -44,20 +44,15 @@ namespace EliteVA.Tests
                 }
             };
 
-        [Theory(DisplayName = "Command name")]
-        [MemberData(nameof(Data))]
-        public void Name(string statusName, object statusValue, string expectedCommand, IEnumerable<string> expectedVariables)
-        {
-            IStatusProcessor status = new StatusProcessor(Mock.Of<IEliteDangerousApi>(), new Formatting(), Mock.Of<IVariableService>(), Mock.Of<ICommandService>());
-            status.GetCommand(statusName).Should().Be(expectedCommand);
-        }
-        
-        [Theory(DisplayName = "Variable name")]
+        [Theory(DisplayName = "StatusProcessor")]
         [MemberData(nameof(Data))]
         public void Variable(string statusName, object statusValue, string expectedCommand, IEnumerable<string> expectedVariables)
         {
             IStatusProcessor status = new StatusProcessor(Mock.Of<IEliteDangerousApi>(), new Formatting(), Mock.Of<IVariableService>(), Mock.Of<ICommandService>());
-            status.GetVariables(statusName, statusValue).Select(x => x.Name).Should().Contain(expectedVariables);
+            var variables = status.GetVariables(statusName, statusValue);
+            variables.Should().OnlyContain(o => o.SourceEvent == string.Empty);
+            variables.Select(x => x.Name).Should().Contain(expectedVariables);
+            status.GetCommand(statusName).Should().Be(expectedCommand);
         }
     }
 }
