@@ -11,6 +11,7 @@ using EliteVA.Constants.Proxy;
 using EliteVA.Constants.Proxy.Abstractions;
 using EliteVA.Event;
 using EliteVA.Event.Abstractions;
+using EliteVA.Logging;
 using EliteVA.Services;
 using EliteVA.Status;
 using EliteVA.Status.Abstractions;
@@ -25,13 +26,11 @@ using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Somfic.Logging.VoiceAttack;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Valsom.Logging.File;
 using Formatting = EliteVA.Constants.Formatting.Formatting;
 
 namespace EliteVA
@@ -104,9 +103,7 @@ namespace EliteVA
 
         private static void Initialize(dynamic vaProxy)
         {
-            PluginDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppDomain.CurrentDomain.BaseDirectory;
-            var logPath = Path.Combine(PluginDir, "Logs");
-            Directory.CreateDirectory(logPath);
+            PluginDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
@@ -130,11 +127,11 @@ namespace EliteVA
                     // Remove annoying HttpClient messages
                     services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
                 })
-                .ConfigureLogging((context, log) =>
+                .ConfigureLogging((context, loggingBuilder) =>
                 {
-                    log.SetMinimumLevel(LogLevel.Trace);
-                    VoiceAttackLoggerExtensions.AddVoiceAttack(log, vaProxy);
-                    log.AddFile("EliteVA", Path.Combine(PluginDir, "Logs"));
+                    loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+                    VALoggingExtensions.AddVoiceAttack(loggingBuilder, vaProxy);
+                    loggingBuilder.AddLogger();
                 })
                 .ConfigureAppConfiguration((context, config) =>
                 {
