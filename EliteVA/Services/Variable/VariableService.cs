@@ -47,7 +47,7 @@ namespace EliteVA.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Cannot save variables");
+                _logger.LogError(ex, "Cannot save variables for [{Category}]", category);
             }
         }
 
