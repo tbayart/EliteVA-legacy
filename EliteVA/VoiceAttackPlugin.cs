@@ -46,8 +46,6 @@ namespace EliteVA
 
         private static Stopwatch _catchupTime = Stopwatch.StartNew();
 
-        private static INeutronPlotter _neutronPlotter;
-
         private static IHost Host { get; set; }
 
         private static IProxy Proxy { get; set; }
@@ -79,6 +77,16 @@ namespace EliteVA
         public static void VA_Exit1(dynamic vaProxy)
         {
             Proxy.SetProxy(vaProxy);
+            try
+            {
+                var alf = Host.Services.GetRequiredService<IHostApplicationLifetime>();
+                alf.StopApplication();
+            }
+            catch (Exception ex)
+            {
+                _ = ex;
+            }
+            Host.StopAsync().GetAwaiter().GetResult();
         }
 
         public static void VA_StopCommand() { }
@@ -96,8 +104,30 @@ namespace EliteVA
                 int efficiency = proxy.Variables.Get<int>("EliteAPI.Spansh.NeutronPlotter.Efficiency");
                 int range = proxy.Variables.Get<int>("EliteAPI.Spansh.NeutronPlotter.Range");
 
-                var result = _neutronPlotter.Plot(sourceSystem, targetSystem, range, efficiency).GetAwaiter().GetResult().Result;
+                var neutronPlotter = Host.Services.GetRequiredService<INeutronPlotter>();
+                var result = neutronPlotter.Plot(sourceSystem, targetSystem, range, efficiency).GetAwaiter().GetResult().Result;
                 Variables.SetVariables("ThirdParty.Spansh", Variables.GetPaths(JObject.FromObject(result, new JsonSerializer { ContractResolver = new LongNameContractResolver() }), string.Empty).Select(x => new Variable(string.Empty, $"EliteAPI.Spansh.NeutronPlotter.{x.Name}", x.Value)));
+            }
+
+            try
+            {
+                if (proxy.Context == "EliteVA.LandingPad.Show")
+                {
+                    var wm = Host.Services
+                        .GetRequiredService<GUI.WindowManager>();
+                    wm.LandingPadShow();
+                }
+                else if (proxy.Context == "EliteVA.LandingPad.Hide")
+                {
+                    var wm = Host.Services
+                        .GetRequiredService<GUI.WindowManager>();
+                    wm.LandingPadHide();
+                }
+            }
+            catch (Exception ex)
+            {
+                var logger = Host.Services.GetRequiredService<ILogger<VoiceAttackPlugin>>();
+                logger.Log(LogLevel.Error, ex, "Exception on {Context}", proxy.Context);
             }
         }
 
@@ -124,12 +154,14 @@ namespace EliteVA
                     services.AddEliteAPI();
                     services.AddSpansh();
 
+                    services.AddSingleton<GUI.WindowManager>();
+
                     // Remove annoying HttpClient messages
-                    services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
+                    //services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
                 })
                 .ConfigureLogging((context, loggingBuilder) =>
                 {
-                    loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+                    loggingBuilder.SetMinimumLevel(LogLevel.Debug);
                     VALoggingExtensions.AddVoiceAttack(loggingBuilder, vaProxy);
                     loggingBuilder.AddLogger();
                 })
@@ -139,13 +171,14 @@ namespace EliteVA
                 })
                 .Build();
 
+            _ = Host.RunAsync();
             Proxy = Host.Services.GetRequiredService<IProxy>();
             Proxy.SetProxy(vaProxy);
 
+            Host.Services.GetRequiredService<GUI.WindowManager>();
+
             var api = Host.Services.GetRequiredService<IEliteDangerousApi>();
             api.OnCatchedUp += EliteApiCatchedUp;
-
-            _neutronPlotter = Host.Services.GetRequiredService<INeutronPlotter>();
 
             var events = Host.Services.GetRequiredService<IEventProcessor>();
             var status = Host.Services.GetRequiredService<IStatusProcessor>();

@@ -13,7 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{19CD15D1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EliteVA.VoiceAttackProxy", "EliteVA.VoiceAttackProxy\EliteVA.VoiceAttackProxy.csproj", "{57DF994F-A87D-49A5-B24C-0B965937C5D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteVA.Logging", "EliteVA.Logging\EliteVA.Logging.csproj", "{31193999-5336-494B-9640-FE44ABF3D1FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EliteVA.Logging", "EliteVA.Logging\EliteVA.Logging.csproj", "{31193999-5336-494B-9640-FE44ABF3D1FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteVA.GUI", "EliteVA.GUI\EliteVA.GUI.csproj", "{805A948F-4A33-4430-AE05-7026F477DE24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{31193999-5336-494B-9640-FE44ABF3D1FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31193999-5336-494B-9640-FE44ABF3D1FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31193999-5336-494B-9640-FE44ABF3D1FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{805A948F-4A33-4430-AE05-7026F477DE24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{805A948F-4A33-4430-AE05-7026F477DE24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{805A948F-4A33-4430-AE05-7026F477DE24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{805A948F-4A33-4430-AE05-7026F477DE24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
