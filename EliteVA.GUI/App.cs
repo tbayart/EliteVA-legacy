@@ -11,6 +11,7 @@ namespace EliteVA.GUI
         {
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
             _landingPads = new LandingPadMap { WindowStartupLocation = WindowStartupLocation.CenterScreen };
+            _landingPads.Closing += LandingPadsClosingOverride;
         }
 
         public void ShowLandingPads()
@@ -30,8 +31,15 @@ namespace EliteVA.GUI
 
         protected override void OnExit(ExitEventArgs e)
         {
+            _landingPads.Closing -= LandingPadsClosingOverride;
             _landingPads.Close();
             base.OnExit(e);
+        }
+
+        private void LandingPadsClosingOverride(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            HideLandingPads();
         }
     }
 }
