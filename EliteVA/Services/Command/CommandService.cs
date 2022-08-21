@@ -3,31 +3,27 @@ using EliteVA.Constants.Paths.Abstractions;
 using EliteVA.Constants.Proxy.Abstractions;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 
 namespace EliteVA.Services
 {
-
     public class CommandService : ICommandService
     {
         #region fields
         private readonly ILogger _logger;
         private readonly IProxy _proxy;
-        private readonly IPaths _paths;
         private readonly IEliteDangerousApi _api;
         private readonly string _commandsPath;
         #endregion fields
 
         #region ctor
-        public CommandService(ILogger<CommandService> log, IProxy proxy, IPaths paths, IEliteDangerousApi api)
+        public CommandService(ILogger<CommandService> logger, IProxy proxy, IPaths paths, IEliteDangerousApi api)
         {
-            _logger = log;
+            _logger = logger;
             _proxy = proxy;
-            _paths = paths;
             _api = api;
-            _commandsPath = Path.Combine(_paths.PluginDirectory.FullName, "Commands");
+            _commandsPath = Path.Combine(paths.PluginDirectory.FullName, "Commands");
             Directory.CreateDirectory(_commandsPath);
         }
         #endregion ctor
@@ -41,9 +37,10 @@ namespace EliteVA.Services
                 return;
             }
 
-            if (_proxy.GetProxy().Commands.Exists(command).GetAwaiter().GetResult())
+            var commands = _proxy.GetProxy().Commands;
+            if (commands.Exists(command).GetAwaiter().GetResult())
             {
-                _proxy.GetProxy().Commands.Invoke(command);
+                commands.Invoke(command);
             }
             else
             {
@@ -58,10 +55,8 @@ namespace EliteVA.Services
         private void AppendInvokedCommands(params string[] commands)
         {
             var now = DateTime.Now;
-            var date = now.ToString("yyyy-MM-dd");
-            var time = now.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
-            var commandsPath = Path.Combine(_commandsPath, $"InvokedCommands_{date}.txt");
-            File.AppendAllLines(commandsPath, commands.Select(o => $"{time} {o}"));
+            var commandsPath = Path.Combine(_commandsPath, $"InvokedCommands_{now:yyyy-MM-dd}.txt");
+            File.AppendAllLines(commandsPath, commands.Select(o => $"{now:HH:mm:ss.fff} {o}"));
         }
         #endregion methods
     }
