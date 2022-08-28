@@ -1,22 +1,37 @@
-﻿using System.Windows;
+﻿using EliteVA.GUI.Views;
+using System;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace EliteVA.GUI
 {
     internal class App : Application
     {
-        private Window _landingPads;
+        private LandingPadView _landingPads;
+        private IntPtr _vaWindowHandle;
 
         public App()
         {
+            _vaWindowHandle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            _landingPads = new LandingPadMap { WindowStartupLocation = WindowStartupLocation.CenterScreen };
+            _landingPads = new LandingPadView { WindowStartupLocation = WindowStartupLocation.CenterScreen };
+            _landingPads.Background = System.Windows.Media.Brushes.Transparent;
             _landingPads.Closing += LandingPadsClosingOverride;
         }
 
-        public void ShowLandingPads()
+        public void ShowLandingPads(string stationName, StationType stationType, int landingPad)
         {
-            Dispatcher.InvokeAsync(() => _landingPads.Show());
+            Dispatcher.InvokeAsync(() => ShowLandingPadsInternal(stationName, stationType, landingPad));
+        }
+
+        private void ShowLandingPadsInternal(string stationName, StationType stationType, int landingPad)
+        {
+            _landingPads.Title = stationName;
+            _landingPads.Show();
+            _landingPads.SetLandingPad(stationType, landingPad);
+            var vaScreen = System.Windows.Forms.Screen.FromHandle(_vaWindowHandle);
+            _landingPads.Left = vaScreen.WorkingArea.Left;
+            _landingPads.Top = vaScreen.WorkingArea.Top;
         }
 
         public void HideLandingPads()

@@ -3,18 +3,34 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
+    <UseForms>true</UseForms>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Medias\LandingPads.png" />
+    <None Remove="Medias\LandingPadsCoords.csv" />
+    <None Remove="Medias\LandingPads_AsteroidBase.png" />
+    <None Remove="Medias\LandingPads_Coriolis.png" />
+    <None Remove="Medias\LandingPads_CraterOutpost.jpg" />
+    <None Remove="Medias\LandingPads_CraterOutpost.png" />
+    <None Remove="Medias\LandingPads_CraterPort.png" />
+    <None Remove="Medias\LandingPads_Outpost.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Medias\LandingPads.png" />
+    <EmbeddedResource Include="Medias\LandingPadsCoords.csv" />
+    <Resource Include="Medias\LandingPads_Coriolis.png" />
+    <Resource Include="Medias\LandingPads_CraterOutpost.png" />
+    <Resource Include="Medias\LandingPads_CraterPort.png" />
+    <Resource Include="Medias\LandingPads_Outpost.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.11.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
 </Project>

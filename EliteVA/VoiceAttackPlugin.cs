@@ -113,9 +113,17 @@ namespace EliteVA
             {
                 if (proxy.Context == "EliteVA.LandingPad.Show")
                 {
-                    var wm = Host.Services
-                        .GetRequiredService<GUI.WindowManager>();
-                    wm.LandingPadShow();
+                    var root = "EliteAPI.DockingGranted.";
+                    var stationName = proxy.Variables.Get<string>(root + "StationName");
+                    if (string.IsNullOrEmpty(stationName))
+                        return;
+
+                    var stationType = proxy.Variables.Get<string>(root + "StationType");
+                    var landingPad = proxy.Variables.Get<int>(root + "LandingPad");
+
+                    Host.Services
+                        .GetRequiredService<GUI.WindowManager>()
+                        .LandingPadShow(stationName, stationType, landingPad);
                 }
                 else if (proxy.Context == "EliteVA.LandingPad.Hide")
                 {

@@ -21,9 +21,17 @@ namespace EliteVA.GUI
             while (_app == null) Task.Delay(100).Wait();
         }
 
-        public void LandingPadShow()
+        public void LandingPadShow(string stationName, string stationTypeString, int landingPad)
         {
-            _app.ShowLandingPads();
+            if (Enum.TryParse<StationType>(stationTypeString, out var stationType) == false)
+                throw new ArgumentException($"Unsupported StationType [{stationTypeString}]");
+
+            LandingPadShow(stationName, stationType, landingPad);
+        }
+
+        public void LandingPadShow(string stationName, StationType stationType, int landingPad)
+        {
+            _app.ShowLandingPads(stationName, stationType, landingPad);
         }
 
         public void LandingPadHide()
