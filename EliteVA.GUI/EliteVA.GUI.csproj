@@ -13,6 +13,7 @@
     <None Remove="Medias\LandingPads_CraterOutpost.jpg" />
     <None Remove="Medias\LandingPads_CraterOutpost.png" />
     <None Remove="Medias\LandingPads_CraterPort.png" />
+    <None Remove="Medias\LandingPads_FleetCarrier.png" />
     <None Remove="Medias\LandingPads_Outpost.png" />
   </ItemGroup>
 
@@ -21,6 +22,7 @@
     <Resource Include="Medias\LandingPads_Coriolis.png" />
     <Resource Include="Medias\LandingPads_CraterOutpost.png" />
     <Resource Include="Medias\LandingPads_CraterPort.png" />
+    <Resource Include="Medias\LandingPads_FleetCarrier.png" />
     <Resource Include="Medias\LandingPads_Outpost.png" />
   </ItemGroup>
 
