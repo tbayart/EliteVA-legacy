@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -26,6 +25,8 @@ namespace EliteVA.GUI.Views
         {
             if (stationType == StationType.Ocellus || stationType == StationType.Orbis || stationType == StationType.AsteroidBase)
                 stationType = StationType.Coriolis;
+            else if (stationType == StationType.MegaShip)
+                stationType = StationType.FleetCarrier;
 
             var uri = new Uri($"pack://application:,,,/EliteVA.GUI;component/Medias/LandingPads_{stationType}.png");
             LandingPadsImage.Source = new BitmapImage(uri);
