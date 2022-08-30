@@ -6,10 +6,13 @@
         xmlns:local="clr-namespace:EliteVA.GUI"
         xmlns:views="clr-namespace:EliteVA.GUI.Views"
         xmlns:iconpacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        mc:Ignorable="d" Topmost="True" WindowStyle="None"
-        Title="Landing pads" Height="500" Width="500" ResizeMode="NoResize">
+        mc:Ignorable="d" Topmost="True" WindowStyle="None" Background="Transparent"
+        Title="Landing pads" Height="500" Width="500" ResizeMode="NoResize"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Grid>
         <Image Name="LandingPadsImage" Source="pack://application:,,,/EliteVA.GUI;component/Medias/LandingPads_Coriolis.png" Stretch="UniformToFill" />
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Text="{Binding Title}" Foreground="Black" FontSize="20"/>
         <Canvas>
             <iconpacks:PackIconMaterial Name="LandingPadIcon" Kind="SelectionEllipseArrowInside" Spin="True" Foreground="Coral"
                                         Width="40" Height="40" VerticalAlignment="Center" />

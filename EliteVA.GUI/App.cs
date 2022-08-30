@@ -1,6 +1,5 @@
 ﻿using EliteVA.GUI.Views;
 using System;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -27,12 +26,8 @@ namespace EliteVA.GUI
 
         private void ShowLandingPadsInternal(string stationName, StationType stationType, int landingPad)
         {
-            _landingPads.Title = stationName;
-            _landingPads.Show();
-            _landingPads.SetLandingPad(stationType, landingPad);
             var vaScreen = System.Windows.Forms.Screen.FromHandle(_vaWindowHandle);
-            _landingPads.Left = vaScreen.WorkingArea.Left;
-            _landingPads.Top = vaScreen.WorkingArea.Top;
+            _landingPads.Show(stationName, stationType, landingPad, vaScreen);
         }
 
         public void HideLandingPads()
