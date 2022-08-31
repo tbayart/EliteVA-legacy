@@ -15,7 +15,6 @@ namespace EliteVA.Services
         #region fields
         private readonly ILogger _logger;
         private readonly IProxy _proxy;
-        private readonly IPaths _paths;
         private readonly string _variablesPath;
         #endregion fields
 
@@ -24,8 +23,7 @@ namespace EliteVA.Services
         {
             _logger = logger;
             _proxy = proxy;
-            _paths = paths;
-            _variablesPath = Path.Combine(_paths.PluginDirectory.FullName, "Variables");
+            _variablesPath = Path.Combine(paths.PluginDirectory.FullName, "Variables");
             Directory.CreateDirectory(_variablesPath);
         }
         #endregion ctor
@@ -34,11 +32,11 @@ namespace EliteVA.Services
         /// <inheritdoc />
         public void SetVariables(string category, IEnumerable<Variable> variables)
         {
+            var vaVariables = _proxy.GetProxy().Variables;
             try
             {
-                _proxy.GetProxy().Variables.Set(category, variables);
-
-                var setVariables = _proxy.GetProxy().Variables.SetVariables
+                vaVariables.Set(category, variables);
+                var setVariables = vaVariables.SetVariables
                     .Where(x => x.Key.category == category)
                     .Select(o => o.Value.ToString())
                     .ToList();
@@ -47,7 +45,7 @@ namespace EliteVA.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Cannot save variables for [{Category}]", category);
+                _logger.Log(LogLevel.Error, ex, "Cannot save variables for [{Category}]", category);
             }
         }
 
