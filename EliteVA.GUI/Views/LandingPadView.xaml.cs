@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -13,12 +11,12 @@ namespace EliteVA.GUI.Views
     public partial class LandingPadView : Window
     {
         private const double _windowScale = 0.5D;
-        private Dictionary<StationType, List<Vector>> _padCoordinates;
+        private LandingPadsCoords _landingPadsCoords;
 
         public LandingPadView()
         {
             InitializeComponent();
-            _padCoordinates = InitializeCoordinates();
+            _landingPadsCoords = new LandingPadsCoords();
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace EliteVA.GUI.Views
             else if (stationType == StationType.MegaShip)
                 stationType = StationType.FleetCarrier;
 
-            var coords = _padCoordinates[stationType][padNumber - 1];
+            var coords = _landingPadsCoords.Get(stationType, padNumber);
             var background = LoadImage(stationType);
 
             Title = stationName;
@@ -68,33 +66,6 @@ namespace EliteVA.GUI.Views
         }
 
         /// <summary>
-        /// Load LandingPads Coordinates from resource into cache dictionary.
-        /// </summary>
-        /// <returns>The dictionary with cached coordinates.</returns>
-        private Dictionary<StationType, List<Vector>> InitializeCoordinates()
-        {
-            var padCoordinates = new Dictionary<StationType, List<Vector>>();
-            string header = null;
-            foreach (var line in LandingPadsCoords())
-            {
-                if (header == null)
-                {
-                    header = line;
-                    continue;
-                }
-                var data = line.Split(',');
-                var stationType = (StationType)Enum.Parse(typeof(StationType), data[0]);
-                var relX = double.Parse(data[4], System.Globalization.CultureInfo.InvariantCulture);
-                var relY = double.Parse(data[5], System.Globalization.CultureInfo.InvariantCulture);
-                var coord = new Vector(relX, relY);
-                if (padCoordinates.ContainsKey(stationType) == false)
-                    padCoordinates[stationType] = new List<Vector>();
-                padCoordinates[stationType].Add(coord);
-            }
-            return padCoordinates;
-        }
-
-        /// <summary>
         /// Load the image for the provided <see cref="StationType"/>.
         /// </summary>
         /// <param name="stationType">The station's type.</param>
@@ -103,20 +74,6 @@ namespace EliteVA.GUI.Views
         {
             var uri = new Uri($"pack://application:,,,/EliteVA.GUI;component/Medias/LandingPads_{stationType}.png");
             return new System.Windows.Media.Imaging.BitmapImage(uri);
-        }
-
-        /// <summary>
-        /// Enumerate LandingPads coordinates from resource.
-        /// </summary>
-        /// <returns>Yield return data line per line.</returns>
-        private IEnumerable<string> LandingPadsCoords()
-        {
-            using (var stream = GetType().Assembly.GetManifestResourceStream("EliteVA.GUI.Medias.LandingPadsCoords.csv"))
-            using (var reader = new StreamReader(stream))
-            {
-                while (reader.EndOfStream == false)
-                    yield return reader.ReadLine();
-            }
         }
     }
 }
