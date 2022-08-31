@@ -50,14 +50,14 @@ namespace EliteVA.Support
             try
             {
                 var jObject = JsonConvert.DeserializeObject<JObject>(JsonConvert.SerializeObject(value));
-                var vars = _variables.GetPaths(jObject, string.Empty);
-                return vars.Select(x => new Variable(string.Empty, _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
+                var vars = _variables.GetPaths(jObject, name);
+                return vars.Select(x => new Variable(name, _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
             }
             catch (JsonSerializationException)
             {
                 var jArray = JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(value));
-                var vars = _variables.GetPaths(jArray, string.Empty);
-                return vars.Select(x => new Variable(string.Empty, _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
+                var vars = _variables.GetPaths(jArray, name);
+                return vars.Select(x => new Variable(name, _formats.Support.ToVariable($"{name}.{x.Name}"), x.Value));
             }
             catch
             {
