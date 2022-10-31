@@ -75,8 +75,11 @@ namespace EliteVA.Support
         #region methods
         void SetVariablesAndInvoke<T>(string name, T value)
         {
-            var statusVariables = GetVariables(name, value);
-            _variables.SetVariables(name, statusVariables);
+            if (value != null)
+            {
+                var statusVariables = GetVariables(name, value);
+                _variables.SetVariables(name, statusVariables);
+            }
             var command = GetCommand(name);
             _commands.InvokeCommand(command);
         }
