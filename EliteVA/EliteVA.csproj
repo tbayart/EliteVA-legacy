@@ -8,8 +8,7 @@
     <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.0.0-alpha1173" />
-    <PackageReference Include="EliteAPI.Spansh" Version="3.0.0-alpha1173" />
+    <PackageReference Include="EliteAPI.Spansh" Version="3.0.0-alpha5054" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
@@ -18,6 +17,7 @@
     <PackageReference Include="Somfic.Logging.VoiceAttack" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\EliteAPI\EliteAPI\EliteAPI.csproj" />
     <ProjectReference Include="..\EliteVA.GUI\EliteVA.GUI.csproj" />
     <ProjectReference Include="..\EliteVA.Logging\EliteVA.Logging.csproj" />
     <ProjectReference Include="..\EliteVA.VoiceAttackProxy\EliteVA.VoiceAttackProxy.csproj" />

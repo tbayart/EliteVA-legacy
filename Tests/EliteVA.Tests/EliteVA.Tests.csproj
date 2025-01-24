@@ -8,7 +8,7 @@
     <Version>3.0.0-alpha1144</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EliteAPI" Version="3.0.0-alpha1173" />
+    <PackageReference Include="EliteAPI" Version="3.0.0-alpha5057" />
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.1" />
     <PackageReference Include="Moq" Version="4.18.2" />
@@ -23,6 +23,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\EliteAPI\EliteAPI\EliteAPI.csproj" />
     <ProjectReference Include="..\..\EliteVA.VoiceAttackProxy\EliteVA.VoiceAttackProxy.csproj" />
     <ProjectReference Include="..\..\EliteVA\EliteVA.csproj" />
   </ItemGroup>

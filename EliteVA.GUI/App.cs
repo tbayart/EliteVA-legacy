@@ -8,11 +8,9 @@ namespace EliteVA.GUI
     internal class App : Application
     {
         private LandingPadView _landingPads;
-        private IntPtr _vaWindowHandle;
 
         public App()
         {
-            _vaWindowHandle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
             _landingPads = new LandingPadView { WindowStartupLocation = WindowStartupLocation.CenterScreen };
             _landingPads.Background = System.Windows.Media.Brushes.Transparent;
@@ -26,7 +24,8 @@ namespace EliteVA.GUI
 
         private void ShowLandingPadsInternal(string stationName, StationType stationType, int landingPad)
         {
-            var vaScreen = System.Windows.Forms.Screen.FromHandle(_vaWindowHandle);
+            var vaWindowHandle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+            var vaScreen = System.Windows.Forms.Screen.FromHandle(vaWindowHandle);
             _landingPads.Show(stationName, stationType, landingPad, vaScreen);
         }
 
